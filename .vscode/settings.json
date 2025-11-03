@@ -1,0 +1,12 @@
+{
+    // Point VS Code to the project's virtual environment Python interpreter.
+    // This helps Pylance find installed packages (Django) once the venv has them.
+    "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+    // Older versions of the Python extension used python.pythonPath; keep it for compatibility.
+    "python.pythonPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+
+    // Make the workspace root available to the analyzer (helps with imports)
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}"
+    ]
+}

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Now - Serein Spa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-color: #A3C9A8; /* Soft Mint Green */
+            --secondary-color: #F8F4E3; /* Light Beige */
+            --accent-color: #B59EBE; /* Soft Lavender/Mauve */
+            --text-dark: #333;
+            --text-light: #fff;
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition-time: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--secondary-color);
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color var(--transition-time);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all var(--transition-time);
+            box-shadow: var(--shadow);
+        }
+        
+        /* --- Utility Classes --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        /* --- Navbar (Consistent Styling) --- */
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: right;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-item {
+            margin-left: 30px;
+        }
+
+        .nav-link {
+            font-weight: 400;
+            color: var(--text-dark);
+            padding: 10px 0; /* Ensures vertical alignment */
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0; 
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width var(--transition-time) ease-in-out;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* --- FIX APPLIED HERE: Styling the 'Book Now' link as a regular nav-link --- */
+        .book-now-link-text {
+            /* Inherit the base nav-link styles */
+            font-weight: 400;
+            color: var(--text-dark);
+            padding: 10px 0; 
+            position: relative;
+            display: inline-block;
+        }
+        
+        /* Styling for the specific 'Book Now' element on desktop */
+        @media (min-width: 769px) {
+            .book-now-link-text {
+                font-weight: 600; /* Optional: Make it slightly bolder to stand out */
+                color: var(--accent-color); /* Optional: Give it an accent color */
+            }
+            /* Add the underline effect back to the 'Book Now' link */
+            .book-now-link-text::after {
+                content: '';
+                position: absolute;
+                left: 0;
+                bottom: 0; 
+                width: 0;
+                height: 2px;
+                background-color: var(--accent-color);
+                transition: width var(--transition-time) ease-in-out;
+            }
+            .book-now-link-text:hover::after, .book-now-link-text.active::after {
+                width: 100%;
+            }
+            .book-now-link-text:hover {
+                color: var(--primary-color);
+            }
+        }
+        
+        /* --- Mobile Toggle --- */
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+        }
+
+        /* --- Form Styles Omitted for brevity (No Change) --- */
+        .booking-form-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        
+        /* --- Footer (Consistent Styling) --- */
+        .footer {
+            background-color: var(--text-dark);
+            color: var(--secondary-color);
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* --- Responsive Design (Mobile consistency) --- */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background-color: var(--secondary-color);
+                box-shadow: var(--shadow);
+                display: none;
+                padding: 20px 0;
+                border-top: 1px solid var(--primary-color);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-item {
+                margin: 10px 0;
+                text-align: left; 
+                padding-left: 20px; 
+            }
+            
+            .nav-item:last-child {
+                margin-top: 20px;
+            }
+
+            .nav-link, .book-now-link-text {
+                 display: inline-block; 
+                 margin: 0;
+                 width: auto;
+            }
+            
+            /* Re-style Book Now for mobile to look like a standard link */
+            .book-now-link-text {
+                font-weight: 400;
+                color: var(--text-dark);
+                /* Ensure mobile underline color is correct */
+            }
+            
+            .book-now-link-text.active::after {
+                background-color: var(--primary-color);
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            h2 {font-size: 2rem;}
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center;">
+            <a href="index.html" class="logo">Serein Spa</a>
+            <div style="display: flex; align-items: center; gap: 32px; margin-left: auto;">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
+                <ul class="nav-menu" id="nav-menu" style="display: flex; align-items: center; gap: 32px;">
+                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                    <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
+                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                    <li class="nav-item"><a href="book-now.html" class="book-now-btn active">Book Now</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="booking" class="section-padding">
+            <div class="container">
+                <h2>Secure Your Serenity</h2>
+                
+                <div class="booking-form-box">
+                    <form id="bookingForm">
+                        
+                        <h3 style="color: var(--accent-color); margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Your Details</h3>
+                        <div class="form-group">
+                            <label for="customerName">Full Name</label>
+                            <input type="text" id="customerName" name="customerName" required placeholder="Enter your full name">
+                        </div>
+                        
+                        <hr style="border-color: var(--secondary-color); margin: 30px 0;">
+                        
+                        <h3 style="color: var(--accent-color); margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Select Service & Schedule</h3>
+                        <div class="form-group">
+                            <label for="serviceSelection">Service Selection</label>
+                            <select id="serviceSelection" name="serviceSelection" required>
+                                <option value="">--- Select a Service ---</option>
+                                <option value="swedish">Swedish Massage (60 mins, ₱1,500)</option>
+                                </select>
+                        </div>
+                        
+                        <button type="submit" class="confirm-btn">Confirm Booking</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Data for services and JavaScript logic for mobile menu/form submission...
+        // ... (This code remains the same as previous versions)
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        document.querySelectorAll('.nav-item a').forEach(n => n.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        }));
+    </script>
+</body>
+</html>

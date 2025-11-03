@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Serein Spa</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-color: #A3C9A8; /* Soft Mint Green */
+            --secondary-color: #F8F4E3; /* Light Beige */
+            --accent-color: #B59EBE; /* Soft Lavender/Mauve */
+            --text-dark: #333;
+            --text-light: #fff;
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition-time: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--secondary-color);
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color var(--transition-time);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all var(--transition-time);
+            box-shadow: var(--shadow);
+        }
+        
+        /* --- Utility Classes --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* --- Navbar (Consistent Styling) --- */
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-item {
+            margin-left: 30px;
+        }
+
+        .nav-link {
+            font-weight: 400;
+            color: var(--text-dark);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width var(--transition-time) ease-in-out;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .book-now-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-now-btn:hover {
+            background-color: #9C83A4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+        
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+        }
+
+        /* --- About Section Styles --- */
+        .story-box {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 60px;
+        }
+
+        .story-box h3 {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+
+        .story-box p {
+            margin-bottom: 15px;
+            color: #555;
+            text-align: justify;
+        }
+        
+        /* --- Team Section Styles --- */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .team-member-card {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease;
+        }
+
+        .team-member-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .team-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 4px solid var(--primary-color);
+        }
+
+        .team-member-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .team-member-card p {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* --- Footer (Consistent Styling) --- */
+        .footer {
+            background-color: var(--text-dark);
+            color: var(--secondary-color);
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background-color: var(--secondary-color);
+                box-shadow: var(--shadow);
+                display: none;
+                padding: 20px 0;
+                border-top: 1px solid var(--primary-color);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-item {
+                margin: 10px 0;
+                text-align: center;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Serein Spa</a>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link active">About</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section id="about-us" class="section-padding">
+            <div class="container">
+                <h2>Our Journey to Tranquility</h2>
+                
+                <div class="story-box">
+                    <h3>Mission & Vision</h3>
+                    <p>Serein Spa was founded on the belief that true wellness is achieved when the mind, body, and spirit are in harmony. Our mission is to provide an escape from the demands of daily life, offering therapeutic treatments delivered with exceptional care and professionalism.</p>
+                    <p>Our vision is to be the premier sanctuary for holistic rejuvenation, recognized for our commitment to quality, client comfort, and the use of natural, ethically sourced ingredients.</p>
+                </div>
+
+                <div class="story-box">
+                    <h3>The Serein Philosophy</h3>
+                    <p>The name "Serein" evokes a gentle, fine rain falling after sunset, symbolizing a calm, refreshing end to the day. This is the experience we strive to create. Our relaxation philosophy centers on **Holistic Care**, **Mindful Presence**, and **Personalized Rituals**. Every treatment is tailored to the individual, ensuring deep relaxation and lasting well-being.</p>
+                    <p style="font-style: italic; color: var(--accent-color); font-weight: 600;">"Where every touch is a step toward serenity."</p>
+                </div>
+                
+                <h2 style="margin-top: 60px;">Meet Our Expert Team</h2>
+                <div class="team-grid">
+                    
+                    <div class="team-member-card">
+                        <img src="https://picsum.photos/150/150?random=therapist1" alt="Photo of Maria" class="team-photo">
+                        <h4>Maria Chavez</h4>
+                        <p>Lead Massage Therapist</p>
+                    </div>
+
+                    <div class="team-member-card">
+                        <img src="https://picsum.photos/150/150?random=therapist2" alt="Photo of Alex" class="team-photo">
+                        <h4>Alex Santos</h4>
+                        <p>Aromatherapy Specialist</p>
+                    </div>
+
+                    <div class="team-member-card">
+                        <img src="https://picsum.photos/150/150?random=therapist3" alt="Photo of Julia" class="team-photo">
+                        <h4>Julia Perez</h4>
+                        <p>Reflexology Expert</p>
+                    </div>
+
+                    <div class="team-member-card">
+                        <img src="https://picsum.photos/150/150?random=therapist4" alt="Photo of Ben" class="team-photo">
+                        <h4>Ben Dela Cruz</h4>
+                        <p>Deep Tissue Specialist</p>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
+    </footer>
+
+    <script>
+        // JavaScript for Mobile Menu Toggle (Consistent)
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        }));
+    </script>
+</body>
+</html>

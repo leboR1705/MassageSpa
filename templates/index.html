@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Serein Spa - Relax. Refresh. Rejuvenate.</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --primary-color: #A3C9A8; /* Soft Mint Green */
+            --secondary-color: #F8F4E3; /* Light Beige */
+            --accent-color: #B59EBE; /* Soft Lavender/Mauve */
+            --text-dark: #333;
+            --text-light: #fff;
+            --font-family: 'Poppins', sans-serif;
+            --border-radius: 12px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition-time: 0.3s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--secondary-color);
+            scroll-behavior: smooth;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+            transition: color var(--transition-time);
+        }
+
+        button {
+            cursor: pointer;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all var(--transition-time);
+            box-shadow: var(--shadow);
+        }
+
+        /* --- Utility Classes --- */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section-padding {
+            padding: 80px 0;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* --- Header/Navbar --- */
+        .navbar {
+            background-color: var(--secondary-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .nav-menu {
+            list-style: none;
+            display: flex;
+        }
+
+        .nav-item {
+            margin-left: 30px;
+        }
+
+        .nav-link {
+            font-weight: 400;
+            color: var(--text-dark);
+            padding: 5px 0;
+            position: relative;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+        }
+        
+        /* Underline effect on hover */
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary-color);
+            transition: width var(--transition-time) ease-in-out;
+        }
+
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 100%;
+        }
+
+        .book-now-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .book-now-btn:hover {
+            background-color: #9C83A4; /* Darker accent */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            color: var(--text-dark);
+        }
+
+        /* --- Hero Section --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: var(--text-light);
+            overflow: hidden;
+            margin-top: 60px; /* Offset for fixed navbar */
+        }
+
+        .hero-video {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 100%;
+            min-height: 100%;
+            width: auto;
+            height: auto;
+            z-index: -1;
+            transform: translate(-50%, -50%);
+            background-size: cover;
+        }
+        
+        /* Fallback image if video fails or for mobile performance */
+        .hero-video-fallback {
+             background: url('https://picsum.photos/1920/1080?random=spa-room') no-repeat center center/cover; 
+             position: absolute;
+             top: 0;
+             left: 0;
+             width: 100%;
+             height: 100%;
+             z-index: -2;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4); /* Dark overlay for text contrast */
+            z-index: -1;
+        }
+
+        .hero-content {
+            z-index: 1;
+            padding: 20px;
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero .cta-button {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            font-size: 1.1rem;
+            padding: 15px 35px;
+            margin-top: 20px;
+        }
+        
+        .hero .cta-button:hover {
+            background-color: #8EBA93; /* Darker primary */
+            transform: scale(1.05);
+        }
+
+        /* --- Preview Sections for Navigation --- */
+        
+        .preview-section {
+            min-height: 50vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+        }
+
+        .preview-section h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+        
+        .preview-content {
+            padding: 40px;
+            border-radius: var(--border-radius);
+            max-width: 800px;
+        }
+
+
+        /* --- Footer --- */
+        .footer {
+            background-color: var(--text-dark);
+            color: var(--secondary-color);
+            padding: 40px 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        /* --- Responsive Design (FIXED MOBILE MENU) --- */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: absolute;
+                top: 60px;
+                left: 0;
+                width: 100%;
+                flex-direction: column;
+                background-color: var(--secondary-color);
+                box-shadow: var(--shadow);
+                display: none; /* Hidden by default */
+                padding: 20px 0;
+                border-top: 1px solid var(--primary-color);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-item {
+                margin: 10px 0;
+                /* FIX: Align all links to the left */
+                text-align: left; 
+                padding-left: 20px;
+            }
+            
+            .nav-item:last-child {
+                margin-top: 20px;
+                padding-left: 20px;
+            }
+            
+            .book-now-btn {
+                /* FIX: Allow button to be left aligned naturally */
+                width: auto;
+                margin: 0;
+                display: inline-block;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+            
+            .hero h1 {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">Serein Spa</a>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="hero-video-fallback"></div>
+            <video autoplay muted loop class="hero-video">
+                <source src="placeholder-spa-video.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>Relax. Refresh. Rejuvenate.</h1>
+                <p style="font-size: 1.2rem;">Find your moment of serenity with our luxurious treatments.</p>
+                <a href="book-now.html" class="cta-button">Book Your Serenity</a>
+            </div>
+        </section>
+
+        <section id="services-preview" class="section-padding text-center preview-section" style="background-color: var(--secondary-color);">
+            <div class="container preview-content">
+                <h2>Our Indulgences</h2>
+                <p style="margin-top: 15px; color: #666;">Experience our signature services, from traditional Swedish to therapeutic Hot Stone treatments. **<a href="services.html" style="color: var(--accent-color); font-weight: 600;">View All Services</a>**.</p>
+            </div>
+        </section>
+
+        <section id="about-preview" class="section-padding text-center preview-section" style="background-color: #fff;">
+            <div class="container preview-content">
+                <h2>Our Philosophy</h2>
+                <p style="margin-top: 15px; color: #666;">We believe in holistic well-being. Learn about our commitment to tranquility and meet our expert team. **<a href="about.html" style="color: var(--accent-color); font-weight: 600;">Read Our Story</a>**.</p>
+            </div>
+        </section>
+
+        <section id="contact-preview" class="section-padding text-center preview-section" style="background-color: var(--secondary-color);">
+            <div class="container preview-content">
+                <h2>Find Your Calm</h2>
+                <p style="margin-top: 15px; color: #666;">Ready to book or have a question? We are located at [Your Address]. **<a href="contact.html" style="color: var(--accent-color); font-weight: 600;">Contact Us Now</a>**.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <p>© 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
+    </footer>
+
+    <script>
+        // JavaScript for Mobile Menu Toggle
+        const menuToggle = document.getElementById('menu-toggle');
+        const navMenu = document.getElementById('nav-menu');
+
+        menuToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+        
+        // Close menu when a link is clicked (useful for mobile)
+        document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
+            if (navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        }));
+    </script>
+</body>
+</html>

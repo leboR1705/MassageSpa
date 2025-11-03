@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Satori Spa</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #81b29a; /* Mint Green */
+            --color-secondary: #f2cc8f; /* Light Beige */
+            --color-accent: #c08497; /* Lavender */
+            --color-bg-dark: #3d405b; /* Dark Navy for Admin Background */
+            --color-bg-light: #f7f5f2; /* Card Background */
+            --color-text-light: #ffffff;
+            --color-text-dark: #3d405b;
+            --color-shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --border-radius-soft: 8px;
+        }
+
+        /* Base Admin Styles */
+        * { box-sizing: border-box; 
+            margin: 0; padding: 0; 
+        }
+       
+          body { 
+              font-family: 'Poppins', sans-serif; 
+              background-color: var(--color-bg-light); 
+              color: var(--color-text-dark);
+              /* Slightly smaller base font so dashboard fits smaller screens */
+              font-size: 13px;
+              line-height: 1.25;
+          }
+
+        h1, h2, h3 { 
+           color: var(--color-text-dark); 
+        }
+        
+        .dashboard-container { 
+            display: flex; min-height: 100vh; 
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--color-bg-dark);
+            color: var(--color-text-light);
+            padding: 20px 0 28px 0; /* slightly smaller bottom padding so logout is a little lower than original */
+            flex-shrink: 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
+            display: flex; /* allow vertical layout and pushing logout to bottom */
+            flex-direction: column;
+        }
+
+        .sidebar h2 {
+            color: var(--color-primary);
+            text-align: center;
+            margin-bottom: 36px; /* increased spacing so nav items are not stuck to the title */
+            font-size: 1.5em;
+        }
+
+        /* Make the nav a vertical flex column with gaps between items */
+        .sidebar nav {
+            display: flex;
+            flex-direction: column;
+            gap: 10px; /* slightly larger gap between each link for breathing room */
+            padding: 6px 16px 0 16px; /* small top padding to further separate from title */
+            flex: 1 1 auto; /* allow nav to grow so logout can be pushed to bottom */
+        }
+
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            padding: 12px 18px; /* slightly more padding for more breathing room */
+            color: var(--color-text-light);
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            cursor: pointer; /* Indicates interactivity */
+            font-size: 0.88rem; /* reduced nav font size */
+            border-radius: 6px; /* soft edges when hovered */
+        }
+
+        .sidebar nav a i {
+            margin-right: 12px; /* slightly larger gap between icon and label */
+            font-size: 0.95em; /* slightly smaller icon to match reduced text */
+            color: var(--color-secondary);
+        }
+
+        .sidebar nav a:hover, .sidebar nav a.active {
+            background-color: rgba(129, 178, 154, 0.2);
+            color: var(--color-secondary);
+            border-left: 4px solid var(--color-primary);
+        }
+        
+        /* Place logout at the bottom of the nav */
+    .sidebar nav a.logout-link { margin-top: auto; margin-bottom: 12px; }
+        .sidebar nav a.logout-link:hover {
+            background-color: #884d5b;
+            border-left: 4px solid var(--color-accent);
+        }
+
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            background-color: var(--color-bg-light);
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .admin-profile .avatar-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            font-size: 18px;
+            border: 2px solid var(--color-text-light);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        }
+
+        /* Content Section Management - FIX: HIDE/SHOW LOGIC */
+        .content-section {
+            display: none; /* Hide all content sections by default */
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .content-section.active {
+            display: block; /* Show the active section */
+            opacity: 1;
+        }
+
+        /* Stats Cards (Overview) */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .stat-card {
+            background-color: var(--color-text-light);
+            padding: 20px;
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--color-shadow-soft);
+            border-left: 5px solid var(--color-primary);
+            transition: transform 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-left-color: var(--color-accent);
+        }
+    /* Values (big numbers) are slightly reduced so they don't overpower titles */
+    .stat-card .value { font-size: 1.6em; font-weight: 700; color: var(--color-bg-dark); margin-bottom: 5px; }
+        .stat-card .label { font-size: 0.9em; color: #666; text-transform: uppercase; }
+
+        /* Tables & Lists */
+        .data-table-container {
+            background-color: var(--color-text-light);
+            padding: 20px;
+            border-radius: var(--border-radius-soft);
+            box-shadow: var(--color-shadow-soft);
+            overflow-x: auto;
+        }
+        /* Bookings search input */
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        .search-bar input[type="search"] {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            width: 320px;
+            max-width: 100%;
+        }
+
+        /* Status edit UI */
+        .status-edit { cursor: pointer; }
+        .status-menu {
+            position: absolute;
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            border-radius: 6px;
+            padding: 6px 0;
+            z-index: 4000;
+            min-width: 160px;
+        }
+        .status-menu button {
+            display: block;
+            width: 100%;
+            padding: 8px 12px;
+            background: transparent;
+            border: none;
+            text-align: left;
+            cursor: pointer;
+        }
+        .status-menu button:hover { background: #f6f6f6; }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+        .data-table th, .data-table td {
+            padding: 8px 10px; /* reduced padding to tighten table */
+            border-bottom: 1px solid #eee;
+        }
+        /* Keep headers/titles readable, make the cell values smaller */
+        .data-table th {
+            color: var(--color-primary);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.95em;
+        }
+        .data-table td {
+            font-size: 0.82em; /* smaller value text */
+            color: var(--color-text-dark);
+        }
+        .data-table tr:hover {
+            background-color: var(--color-bg-light);
+        }
+        .data-table td i {
+             cursor: pointer;
+             margin-right: 10px;
+             color: var(--color-accent);
+             transition: color 0.2s;
+        }
+        .data-table td i:hover {
+            color: var(--color-primary);
+        }
+
+        /* Delete action button */
+        .action-delete {
+            background: transparent;
+            border: none;
+            color: #c0414a;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: background 0.12s, transform 0.08s;
+        }
+        .action-delete:hover { background: rgba(192,65,74,0.08); transform: translateY(-1px); }
+
+        /* Ensure status chevron sits at the right side of the cell */
+        .data-table td { position: relative; }
+        /* Make status badge and chevron separate elements (not overlapping) */
+        .status-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
+        .status-toggle {
+            color: #7a7a7a;
+            font-size: 0.95em;
+            transition: color 0.15s ease, transform 0.12s ease;
+            margin-left: 6px;
+            background: transparent;
+            padding: 2px;
+        }
+        .status-toggle:hover { color: var(--color-primary); transform: scale(1.06); }
+        /* ensure badge has comfortable spacing but not huge padding */
+        .status-badge { padding-right: 12px; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-align: center;
+        }
+        .status-confirmed { background-color: #d4edda; color: #155724; }
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-cancelled { background-color: #f8d7da; color: #721c24; }
+
+        .btn-add {
+            background-color: var(--color-accent);
+            color: var(--color-text-light);
+            padding: 8px 15px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .btn-add:hover {
+            background-color: #a86c81;
+        }
+
+        /* Left-align the Add button that directly follows a section title */
+        .section-title-admin + .btn-add {
+            display: inline-block;
+            margin: 12px 0 18px 0; /* left aligned under the title */
+        }
+
+        /* Reports Section Specifics */
+        .chart-placeholder {
+            height: 300px;
+            background-color: var(--color-text-light);
+            border: 1px dashed var(--color-primary);
+            border-radius: var(--border-radius-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        /* Input field styling for Settings */
+        .data-table-container input[type="text"], 
+        .data-table-container input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .data-table-container label {
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 5px;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .dashboard-container { flex-direction: column; }
+            .sidebar { width: 100%; padding: 20px 0; }
+            .sidebar nav { display: flex; overflow-x: auto; justify-content: space-around; }
+            .sidebar nav a { padding: 6px 10px; border-left: none; border-bottom: 4px solid transparent; font-size: 0.95rem; }
+            .sidebar nav a:hover, .sidebar nav a.active { border-left: none; border-bottom: 4px solid var(--color-primary); }
+            .sidebar nav a i { margin-right: 5px; }
+            .main-content { padding: 20px; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .header-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .data-table td, .data-table th { font-size: 0.82em; padding: 6px 8px; }
+            body { font-size: 12px; }
+        }
+
+        /* Extra tightening for medium and small laptops */
+        @media (max-width: 1100px) {
+            body { font-size: 12px; }
+            .data-table th, .data-table td { padding: 7px 9px; font-size: 0.9rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-container">
+        <div class="sidebar">
+            <h2>Satori Admin</h2>
+            <nav id="admin-nav">
+                <a href="#" data-target="overview" class="active"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="#" data-target="bookings"><i class="fas fa-calendar-check"></i> Bookings</a>
+                <a href="#" data-target="services"><i class="fas fa-spa"></i> Services</a>
+                <a href="#" data-target="employee"><i class="fas fa-user-tie"></i> Employee</a>
+                <a href="#" data-target="reports"><i class="fas fa-chart-line"></i> Reports</a>
+                <a href="#" data-target="settings"><i class="fas fa-cog"></i> Settings</a>
+
+                <a href="{% url 'massage_app:login' %}" class="logout-link" style="margin-top: 30px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </nav>
+        </div>
+
+        <div class="main-content">
+            <div class="header-bar">
+                <h1 id="content-title">Dashboard Overview</h1>
+                <div class="admin-profile">
+                    <span class="avatar-icon" title="Admin"><i class="fas fa-user"></i></span>
+                    <span class="avatar-icon" title="Notifications" style="margin-left: 16px; position: relative;">
+                        <i class="fas fa-bell"></i>
+                        <!-- Notification badge (hidden by default, show when there are new messages) -->
+                        <span id="notif-badge" style="display:none; position:absolute; top:-6px; right:-6px; background:#c0414a; color:#fff; border-radius:50%; font-size:10px; padding:2px 6px;">1</span>
+                    </span>
+                </div>
+            </div>
+
+            <section id="overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="value">3</div>
+                        <div class="label">New Bookings Today</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">₱15.5K</div>
+                        <div class="label">Revenue (This Week)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">96%</div>
+                        <div class="label">Client Satisfaction</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="value">3</div>
+                        <div class="label">Active Therapists</div>
+                    </div>
+                </div>
+
+                <h2 class="section-title-admin">Recent Completed Bookings</h2>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                <th>Service</th>
+                                <th>Date & Time</th>
+                                <th>Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="overview-bookings-body">
+                            <tr>
+                                <td>B-1001</td>
+                                <td>Jane Doe</td>
+                                <td>jane.doe@example.com</td>
+                                <td>0917-555-0101</td>
+                                <td>Hot Stone Therapy</td>
+                                <td>Oct 26, 12:00 PM</td>
+                                <td>Gcash</td>
+                            </tr>
+                            <tr>
+                                <td>B-1002</td>
+                                <td>Mark Smith</td>
+                                <td>mark.smith@example.com</td>
+                                <td>0917-555-0102</td>
+                                <td>Swedish Massage (60)</td>
+                                <td>Oct 26, 02:30 PM</td>
+                                <td>Cash on Arrival</td>
+                            </tr>
+                            <tr>
+                                <td>B-1003</td>
+                                <td>Anna Lee</td>
+                                <td></td>
+                                <td></td>
+                                <td>Aromatherapy</td>
+                                <td>Oct 27, 10:00 AM</td>
+                                <td>Credit Card</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="bookings" class="content-section">
+                <h2 class="section-title-admin">All Appointments Management</h2>
+                <div class="search-bar">
+                    <input id="bookings-search" type="search" placeholder="search" />
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Contact</th>
+                                <th>Service</th>
+                                <th>Therapist</th>
+                                <th>Date & Time</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-body">
+                            <tr>
+                                <td>B-1001</td>
+                                <td>Jane Doe</td>
+                                <td>jane.doe@example.com</td>
+                                <td>0917-555-0101</td>
+                                <td>Hot Stone Therapy</td>
+                                <td>Elara Mae</td>
+                                <td>Oct 26, 12:00 PM</td>
+                                <td>₱2,100</td>
+                                <td class="status-cell">
+                                    <span class="status-badge status-confirmed status-edit">Accept</span>
+                                    <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
+                                </td>
+                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>B-1004</td>
+                                <td>Maria Dela Cruz</td>
+                                <td>maria.delacruz@example.com</td>
+                                <td>0917-555-0103</td>
+                                <td>Foot Spa (45)</td>
+                                <td>Chloe Anne</td>
+                                <td>Oct 27, 04:00 PM</td>
+                                <td>₱950</td>
+                                <td class="status-cell">
+                                    <span class="status-badge status-pending status-edit">Pending</span>
+                                    <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
+                                </td>
+                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
+                            </tr>
+                            <tr>
+                                <td>B-1005</td>
+                                <td>Kris Aquino</td>
+                                <td>kris.aquino@example.com</td>
+                                <td>0917-555-0104</td>
+                                <td>Swedish (90)</td>
+                                <td>Marcus Jay</td>
+                                <td>Oct 25, 09:00 AM</td>
+                                <td>₱1,700</td>
+                                <td class="status-cell">
+                                    <span class="status-badge status-cancelled status-edit">Cancelled</span>
+                                    <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
+                                </td>
+                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Clients section removed -->
+
+            <section id="services" class="content-section">
+                <h2 class="section-title-admin">Service & Pricing Management</h2>
+                <button type="button" class="btn-add" id="add-service-btn"><i class="fas fa-plus"></i> Add New Service</button>
+
+                <!-- Add Service Modal -->
+                <div id="service-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:3000;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
+                    <div style="background:#fff;border-radius:8px;max-width:680px;width:92%;margin:0 auto;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+                        <h3 style="margin-top:0;">Add New Service</h3>
+                        <form id="service-form">
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                                <div style="flex:1 1 220px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Service Name</label>
+                                    <input id="svc-name" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" required />
+                                </div>
+                                <div style="flex:0 0 140px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Duration</label>
+                                    <input id="svc-duration" type="text" placeholder="e.g. 60 min" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                </div>
+                                <div style="flex:0 0 140px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Price</label>
+                                    <input id="svc-price" type="text" placeholder="₱" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                </div>
+                                <!-- Category removed -->
+                            </div>
+                            <div style="margin-top:12px;">
+                                <label style="display:block;font-weight:600;margin-bottom:6px;">Description</label>
+                                <textarea id="svc-desc" rows="3" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></textarea>
+                            </div>
+                            <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
+                                <div>
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Image</label>
+                                    <input id="svc-image" type="file" accept="image/*" />
+                                </div>
+                                <div id="svc-image-preview" style="display:none;">
+                                    <img src="" alt="preview" style="max-height:80px;border-radius:6px;" />
+                                </div>
+                            </div>
+                            <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+                                <button type="button" id="svc-cancel" class="btn-add" style="background:#ccc;color:#333;padding:8px 14px;border-radius:6px;border:none;">Cancel</button>
+                                <button type="submit" class="btn-add" style="background:var(--color-primary);">Add Service</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Description</th>
+                                <th>Duration</th>
+                                <th>Price</th>
+                                <th>Image</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="services-table-body">
+                            <tr>
+                                <td>Swedish Massage</td>
+                                <td></td>
+                                <td>60 min</td>
+                                <td>₱1,200</td>
+                                <td></td>
+                                <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Hot Stone Therapy</td>
+                                <td></td>
+                                <td>90 min</td>
+                                <td>₱2,100</td>
+                                <td></td>
+                                <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
+                            </tr>
+                            <tr>
+                                <td>Foot Spa & Reflexology</td>
+                                <td></td>
+                                <td>45 min</td>
+                                <td>₱950</td>
+                                <td></td>
+                                <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3 class="section-title-admin" style="margin-top: 40px;">Therapist Scheduling</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Therapist Name</th>
+                                <th>Specialty</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="employee-table-body">
+                            <tr>
+                                <td>Elara Mae</td>
+                                <td>Hot Stone, Swedish</td>
+                                <td>Active</td>
+                                <td><i class="fas fa-calendar-alt" title="View Schedule"></i> Schedule</td>
+                            </tr>
+                            <tr>
+                                <td>Marcus Jay</td>
+                                <td>Deep Tissue, Sports</td>
+                                <td>Active</td>
+                                <td><i class="fas fa-calendar-alt" title="View Schedule"></i> Schedule</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="employee" class="content-section">
+                <h2 class="section-title-admin">Employee Management</h2>
+                <button type="button" class="btn-add" id="add-employee-btn"><i class="fas fa-plus"></i> Add New Employee</button>
+
+                <!-- Add Employee Modal -->
+                <div id="employee-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:3000;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
+                    <div style="background:#fff;border-radius:8px;max-width:680px;width:92%;margin:0 auto;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,0.2);">
+                        <h3 style="margin-top:0;">Add New Employee</h3>
+                        <form id="employee-form">
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                                <div style="flex:1 1 240px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Full Name</label>
+                                    <input id="emp-name" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" required />
+                                </div>
+                                <div style="flex:1 1 200px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Role</label>
+                                    <input id="emp-role" type="text" placeholder="e.g. Lead Therapist" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                </div>
+                                <div style="flex:1 1 200px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Specialty</label>
+                                    <input id="emp-specialty" type="text" placeholder="e.g. Hot Stone" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                </div>
+                            </div>
+                            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+                                <div style="flex:1 1 180px;">
+                                    <label style="display:block;font-weight:600;margin-bottom:6px;">Status</label>
+                                    <select id="emp-status" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
+                                        <option value="Active">Active</option>
+                                        <option value="On Leave">On Leave</option>
+                                        <option value="Inactive">Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div style="margin-top:16px;display:flex;gap:8px;justify-content:flex-end;">
+                                <button type="button" id="emp-cancel" class="btn-add" style="background:#ccc;color:#333;padding:8px 14px;border-radius:6px;border:none;">Cancel</button>
+                                <button type="button" id="emp-add" class="btn-add" style="background:var(--color-primary);">Add Employee</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="data-table-container" style="margin-top: 20px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th>Specialty</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>E-001</td>
+                                <td>Elara Mae</td>
+                                <td>Lead Therapist</td>
+                                <td>Hot Stone, Swedish</td>
+                                <td><span class="status-badge status-confirmed">Active</span></td>
+                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
+                            </tr>
+                            <tr>
+                                <td>E-002</td>
+                                <td>Marcus Jay</td>
+                                <td>Senior Therapist</td>
+                                <td>Deep Tissue, Sports</td>
+                                <td><span class="status-badge status-confirmed">Active</span></td>
+                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
+                            </tr>
+                            <tr>
+                                <td>E-003</td>
+                                <td>Chloe Anne</td>
+                                <td>Aromatherapy Specialist</td>
+                                <td>Aromatherapy</td>
+                                <td><span class="status-badge status-pending">On Leave</span></td>
+                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="reports" class="content-section">
+                <h2 class="section-title-admin">Performance Reports</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+                    <div>
+                        <h3>Monthly Revenue Trend</h3>
+                        <div class="chart-placeholder">Chart: Revenue vs. Month (Placeholder)</div>
+                    </div>
+                    <div>
+                        <h3>Top Services by Volume</h3>
+                        <div class="chart-placeholder">Chart: Service Popularity (Pie Chart Placeholder)</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title-admin" style="margin-top: 40px;">Booking Activity Summary</h3>
+                <div class="data-table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value (Last 30 Days)</th>
+                                <th>Change from Prev.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Bookings</td>
+                                <td>520</td>
+                                <td><span style="color: green;"><i class="fas fa-arrow-up"></i> +15%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Cancellation Rate</td>
+                                <td>8%</td>
+                                <td><span style="color: red;"><i class="fas fa-arrow-down"></i> -2%</span></td>
+                            </tr>
+                            <tr>
+                                <td>Average Booking Value</td>
+                                <td>₱1,450</td>
+                                <td><span style="color: green;"><i class="fas fa-arrow-up"></i> +5%</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <section id="settings" class="content-section">
+                <h2 class="section-title-admin">System Configuration</h2>
+                <div class="data-table-container" style="padding: 30px;">
+                    <form>
+                        <h3>General Settings</h3>
+                        <div style="margin-bottom: 20px;">
+                            <label>Spa Name</label>
+                            <input type="text" value="Satori Spa">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label>Default Operating Hours</label>
+                            <input type="text" value="10:00 AM - 9:00 PM">
+                        </div>
+                        
+                        <h3 style="margin-top: 30px;">Booking Rules</h3>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: inline; margin-right: 15px;">Require Payment Deposit:</label>
+                            <input type="checkbox" checked> <span style="font-weight: 600;">Yes (10% Required)</span>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label>Booking Lead Time (hours)</label>
+                            <input type="number" value="3">
+                        </div>
+
+                        <button class="btn-add" style="background-color: var(--color-primary); margin-top: 20px; padding: 10px 20px;">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Select all links that have the data-target attribute
+            const navLinks = document.querySelectorAll('#admin-nav a[data-target]');
+            const contentSections = document.querySelectorAll('.content-section');
+            const contentTitle = document.getElementById('content-title');
+
+            // Function to handle the content switching
+            function updateView(targetId) {
+                // 1. Deactivate all links and hide all sections
+                navLinks.forEach(link => link.classList.remove('active'));
+                contentSections.forEach(section => section.classList.remove('active'));
+
+                // 2. Activate the clicked link and show the target section
+                const activeLink = document.querySelector(`a[data-target="${targetId}"]`);
+                const activeSection = document.getElementById(targetId);
+
+                if (activeLink && activeSection) {
+                    activeLink.classList.add('active');
+                    activeSection.classList.add('active');
+                    
+                    // 3. Update the main header title
+                    let titleText = activeLink.textContent.trim();
+                    if (titleText === "Overview") {
+                        contentTitle.textContent = "Dashboard Overview";
+                    } else {
+                        contentTitle.textContent = titleText;
+                    }
+                }
+            }
+
+            // --- Employee modal & add logic ---
+            const addEmployeeBtn = document.getElementById('add-employee-btn');
+            const employeeModal = document.getElementById('employee-modal');
+            const employeeForm = document.getElementById('employee-form');
+            const empCancel = document.getElementById('emp-cancel');
+            const employeesTbody = document.getElementById('employee-table-body');
+            const empAddBtn = document.getElementById('emp-add');
+
+            if (addEmployeeBtn && employeeModal && employeeForm && employeesTbody && empAddBtn) {
+                addEmployeeBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    employeeModal.style.display = 'flex';
+                });
+
+                // Close modal when clicking backdrop
+                employeeModal.addEventListener('click', (e) => {
+                    if (e.target === employeeModal) {
+                        employeeModal.style.display = 'none';
+                        employeeForm.reset();
+                    }
+                });
+
+                // Cancel button inside modal
+                empCancel.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    employeeModal.style.display = 'none';
+                    employeeForm.reset();
+                });
+
+                empAddBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('emp-name').value.trim();
+                    const role = document.getElementById('emp-role').value.trim();
+                    const specialty = document.getElementById('emp-specialty').value.trim();
+                    const status = document.getElementById('emp-status').value;
+                    if (!name) { alert('Please enter the employee full name.'); return; }
+
+                    // generate Employee ID based on existing rows (start at 1)
+                    const rows = Array.from(employeesTbody.querySelectorAll('tr'));
+                    let maxId = 0;
+                    rows.forEach(r => {
+                        const firstTd = r.querySelector('td');
+                        if (!firstTd) return;
+                        const txt = firstTd.textContent.trim();
+                        const m = txt.match(/E-(\d+)/);
+                        if (m) {
+                            const n = parseInt(m[1], 10);
+                            if (!Number.isNaN(n) && n > maxId) maxId = n;
+                        }
+                    });
+                    const idNum = maxId + 1; // will be 1 if no existing IDs
+                    const empId = `E-${String(idNum).padStart(3, '0')}`;
+
+                    function appendEmployeeRow() {
+                        const tr = document.createElement('tr');
+                        const idTd = document.createElement('td'); idTd.textContent = empId;
+                        const nameTd = document.createElement('td'); nameTd.textContent = name;
+                        const roleTd = document.createElement('td'); roleTd.textContent = role;
+                        const specTd = document.createElement('td'); specTd.textContent = specialty;
+                        const statusTd = document.createElement('td'); statusTd.innerHTML = `<span class="status-badge ${status === 'Active' ? 'status-confirmed' : (status === 'On Leave' ? 'status-pending' : 'status-cancelled')}">${escapeHtml(status)}</span>`;
+                        const actionsTd = document.createElement('td'); actionsTd.innerHTML = '<i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i>';
+
+                        tr.appendChild(idTd);
+                        tr.appendChild(nameTd);
+                        tr.appendChild(roleTd);
+                        tr.appendChild(specTd);
+                        tr.appendChild(statusTd);
+                        tr.appendChild(actionsTd);
+
+                        employeesTbody.appendChild(tr);
+                        employeeModal.style.display = 'none';
+                        employeeForm.reset();
+                    }
+
+                    // Actually append the new employee row
+                    appendEmployeeRow();
+                });
+            }
+
+            // Event listeners for internal navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    const target = link.getAttribute('data-target');
+                    if (target) {
+                        e.preventDefault(); // *** CRITICAL FIX: Stops page reload/jump ***
+                        updateView(target);
+                    }
+                });
+            });
+
+            // Initialize: show the overview section on page load
+            updateView('overview');
+
+            // --- Service modal & add logic ---
+            const addServiceBtn = document.getElementById('add-service-btn');
+            const serviceModal = document.getElementById('service-modal');
+            const serviceForm = document.getElementById('service-form');
+            const svcCancel = document.getElementById('svc-cancel');
+            const svcImageInput = document.getElementById('svc-image');
+            const svcImagePreviewImg = document.querySelector('#svc-image-preview img');
+            const svcImagePreviewWrap = document.getElementById('svc-image-preview');
+            const servicesTbody = document.getElementById('services-table-body');
+            // editing state for services
+            let svcEditingRow = null;
+            let svcSubmitBtn = null;
+            let svcModalTitle = null;
+
+            function escapeHtml(text) {
+                return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+            }
+
+            if (addServiceBtn && serviceModal && serviceForm && servicesTbody) {
+                addServiceBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    serviceModal.style.display = 'flex';
+                });
+
+                svcCancel.addEventListener('click', () => {
+                    serviceModal.style.display = 'none';
+                    serviceForm.reset();
+                    if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                });
+
+                // Close modal when clicking backdrop
+                serviceModal.addEventListener('click', (e) => {
+                    if (e.target === serviceModal) {
+                        serviceModal.style.display = 'none';
+                        serviceForm.reset();
+                        if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    }
+                });
+
+                // set modal title/button refs
+                svcSubmitBtn = serviceForm.querySelector('button[type="submit"]');
+                svcModalTitle = serviceModal.querySelector('h3');
+
+                // Image preview
+                svcImageInput.addEventListener('change', () => {
+                    const file = svcImageInput.files[0];
+                    if (!file) { svcImagePreviewWrap.style.display = 'none'; svcImagePreviewImg.src = ''; return; }
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        svcImagePreviewImg.src = ev.target.result;
+                        svcImagePreviewWrap.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                });
+
+                serviceForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const name = document.getElementById('svc-name').value.trim();
+                    const duration = document.getElementById('svc-duration').value.trim();
+                    const price = document.getElementById('svc-price').value.trim();
+                    const desc = document.getElementById('svc-desc').value.trim();
+
+                    if (!name) { alert('Please enter a service name.'); return; }
+
+                    function appendRow(imgSrc) {
+                        const tr = document.createElement('tr');
+                        // Name cell
+                        const nameTd = document.createElement('td');
+                        nameTd.textContent = name;
+
+                        // Description cell (new column)
+                        const descTd = document.createElement('td');
+                        descTd.textContent = desc || '';
+
+                        const durTd = document.createElement('td'); durTd.textContent = duration;
+                        const priceTd = document.createElement('td'); priceTd.textContent = price;
+
+                        // Image cell
+                        const imgTd = document.createElement('td');
+                        if (imgSrc) {
+                            const img = document.createElement('img');
+                            img.src = imgSrc;
+                            img.alt = '';
+                            img.style.maxHeight = '40px';
+                            img.style.borderRadius = '6px';
+                            img.style.verticalAlign = 'middle';
+                            imgTd.appendChild(img);
+                        }
+
+                        const actionsTd = document.createElement('td'); actionsTd.innerHTML = '<i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i>';
+
+                        tr.appendChild(nameTd);
+                        tr.appendChild(descTd);
+                        tr.appendChild(durTd);
+                        tr.appendChild(priceTd);
+                        tr.appendChild(imgTd);
+                        tr.appendChild(actionsTd);
+
+                        servicesTbody.appendChild(tr);
+                        serviceModal.style.display = 'none';
+                        serviceForm.reset();
+                        svcEditingRow = null;
+                        if (svcModalTitle) svcModalTitle.textContent = 'Add New Service';
+                        if (svcSubmitBtn) svcSubmitBtn.textContent = 'Add Service';
+                        if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    }
+
+                    function updateRow(row, imgSrc) {
+                        const tds = row.children;
+                        tds[0].textContent = name;
+                        tds[1].textContent = desc || '';
+                        tds[2].textContent = duration;
+                        tds[3].textContent = price;
+                        const imgTd = tds[4];
+                        imgTd.innerHTML = '';
+                        if (imgSrc) {
+                            const img = document.createElement('img');
+                            img.src = imgSrc;
+                            img.alt = '';
+                            img.style.maxHeight = '40px';
+                            img.style.borderRadius = '6px';
+                            img.style.verticalAlign = 'middle';
+                            imgTd.appendChild(img);
+                        }
+                        serviceModal.style.display = 'none';
+                        serviceForm.reset();
+                        svcEditingRow = null;
+                        if (svcModalTitle) svcModalTitle.textContent = 'Add New Service';
+                        if (svcSubmitBtn) svcSubmitBtn.textContent = 'Add Service';
+                        if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    }
+
+                    const file = svcImageInput.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            if (svcEditingRow) updateRow(svcEditingRow, ev.target.result);
+                            else appendRow(ev.target.result);
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        if (svcEditingRow) updateRow(svcEditingRow, null);
+                        else appendRow(null);
+                    }
+                });
+            }
+
+            // --- Bookings search (client-side) & status editor ---
+            const bookingsSearch = document.getElementById('bookings-search');
+            const bookingsTbody = document.getElementById('bookings-body');
+
+            function filterBookings(term) {
+                const q = term.trim().toLowerCase();
+                if (!bookingsTbody) return;
+                const rows = Array.from(bookingsTbody.querySelectorAll('tr'));
+                rows.forEach(row => {
+                    const text = row.innerText.toLowerCase();
+                    row.style.display = q === '' ? '' : (text.indexOf(q) !== -1 ? '' : 'none');
+                });
+            }
+
+            if (bookingsSearch && bookingsTbody) {
+                bookingsSearch.addEventListener('input', (e) => filterBookings(e.target.value));
+            }
+
+            // Status editor: floating menu to change status
+            let statusMenu = null;
+            const statusOptions = [
+                { name: 'Accept', cls: 'status-confirmed' },
+                { name: 'Cancelled', cls: 'status-cancelled' },
+                { name: 'Completed', cls: 'status-confirmed' }
+            ];
+
+            function closeStatusMenu() {
+                if (statusMenu && statusMenu.parentNode) statusMenu.parentNode.removeChild(statusMenu);
+                statusMenu = null;
+            }
+
+            function showStatusMenu(targetSpan) {
+                closeStatusMenu();
+                statusMenu = document.createElement('div');
+                statusMenu.className = 'status-menu';
+                statusOptions.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.textContent = opt.name;
+                    btn.addEventListener('click', () => {
+                        // update text and class
+                        targetSpan.textContent = opt.name;
+                        targetSpan.classList.remove('status-confirmed','status-pending','status-cancelled');
+                        if (opt.cls) targetSpan.classList.add(opt.cls);
+                        closeStatusMenu();
+                    });
+                    statusMenu.appendChild(btn);
+                });
+                document.body.appendChild(statusMenu);
+                // position menu near the clicked element
+                const rect = targetSpan.getBoundingClientRect();
+                const top = rect.bottom + window.scrollY + 6; // below
+                const left = Math.min(window.scrollX + rect.left, window.scrollX + document.documentElement.clientWidth - 200);
+                statusMenu.style.top = top + 'px';
+                statusMenu.style.left = left + 'px';
+            }
+
+            // Delegate clicks for delete buttons and status badges
+            document.addEventListener('click', (e) => {
+                const target = e.target;
+
+                // 1) Delete action (button may contain an <i>)
+                const del = e.target.closest && e.target.closest('.action-delete');
+                if (del) {
+                    e.stopPropagation();
+                    const row = del.closest('tr');
+                    const bookingId = row ? (row.querySelector('td') ? row.querySelector('td').textContent.trim() : '') : '';
+                    const ok = confirm(`Delete booking ${bookingId || ''}?`);
+                    if (ok && row) row.remove();
+                    return;
+                }
+
+                // 2) Service delete/edit (icons in Services table)
+                const svcDel = e.target.closest && e.target.closest('.svc-delete');
+                if (svcDel) {
+                    e.stopPropagation();
+                    const row = svcDel.closest('tr');
+                    const svcName = row ? (row.querySelector('td') ? row.querySelector('td').textContent.trim() : '') : '';
+                    const ok = confirm(`Delete service ${svcName || ''}?`);
+                    if (ok && row) row.remove();
+                    return;
+                }
+
+                const svcEd = e.target.closest && e.target.closest('.svc-edit');
+                if (svcEd) {
+                    e.stopPropagation();
+                    const row = svcEd.closest('tr');
+                    if (!row) return;
+                    // populate modal fields from row cells: Name, Description, Duration, Price, Image
+                    document.getElementById('svc-name').value = row.children[0].textContent.trim();
+                    document.getElementById('svc-desc').value = row.children[1].textContent.trim();
+                    document.getElementById('svc-duration').value = row.children[2].textContent.trim();
+                    document.getElementById('svc-price').value = row.children[3].textContent.trim();
+                    const imgEl = row.children[4].querySelector('img');
+                    if (imgEl) { svcImagePreviewImg.src = imgEl.src; svcImagePreviewWrap.style.display = 'block'; }
+                    else { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    svcEditingRow = row;
+                    if (svcModalTitle) svcModalTitle.textContent = 'Edit Service';
+                    if (svcSubmitBtn) svcSubmitBtn.textContent = 'Save Changes';
+                    serviceModal.style.display = 'flex';
+                    return;
+                }
+
+                // 3) Status editor: clicking badge or chevron
+                if (target && target.classList) {
+                    if (target.classList.contains('status-edit') || target.classList.contains('status-toggle')) {
+                        e.stopPropagation();
+                        let span = target;
+                        if (target.classList.contains('status-toggle')) {
+                            const prev = target.previousElementSibling;
+                            if (prev && prev.classList && prev.classList.contains('status-badge')) span = prev;
+                        }
+                        if (span) showStatusMenu(span);
+                        return;
+                    }
+                }
+
+                // clicking outside should close menu
+                if (statusMenu && !statusMenu.contains(target)) {
+                    closeStatusMenu();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

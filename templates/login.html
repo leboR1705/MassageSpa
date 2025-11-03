@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Account - Serafina Spa</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+       
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #E0FFFF; /* Mint Green background */
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Page header (compact, placed above the login container) */
+        .page-title {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .page-title h1 {
+            margin: 0;
+            font-size: 1.4em;
+            color: #2E7D32; /* darker green */
+            letter-spacing: 0.2px;
+            font-weight: 700;
+        }
+        @media (max-width: 480px) {
+            .page-title h1 { font-size: 1.1em; }
+        }
+
+        /* Card Container */
+        .account-container {
+            background-color: white;
+            padding: 20px; /* reduced so card is shorter */
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+            max-width: 400px; /* restored original width */
+            width: 90%;
+            text-align: center;
+            transition: height 0.25s ease-in-out; /* Smooth transition for content change */
+        }
+        .account-container h2 {
+            color: #4CAF50;
+            margin-bottom: 14px; /* smaller spacing */
+            font-size: 1.4em; /* smaller heading */
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 10px; /* reduced spacing between fields */
+            text-align: left;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 700;
+            color: #555;
+            font-size: 0.95em;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px; /* smaller input height */
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 0.95em;
+            transition: border-color 0.2s ease;
+        }
+        .form-group input:focus {
+            border-color: #4CAF50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+        }
+
+        /* Buttons */
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 18px; /* slightly smaller */
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: background-color 0.2s ease, transform 0.15s ease;
+            margin-bottom: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+        }
+
+        /* Toggle Links */
+        .toggle-link {
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+        .toggle-link a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 700;
+            transition: color 0.3s;
+        }
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Toggle Content Display */
+        #register-form {
+            display: none;
+        }
+        #register-form .form-group {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsiveness */
+        @media (max-width: 480px) {
+            .account-container {
+                padding: 14px 12px; /* tighter on small screens */
+                max-width: 340px;
+            }
+            .account-container h2 { font-size: 1.2em; margin-bottom: 10px; }
+            .form-group input { padding: 8px; }
+            .submit-btn { padding: 9px 14px; }
+        }
+
+        /* Smaller separators */
+        hr { margin: 10px 0; border-top: 1px solid #eee; }
+    </style>
+    </head>
+    <body>
+        <main>
+        <div class="page-title"><h1>Welcome to Satoti Spa</h1></div>
+            <div class="account-container">
+            <div id="login-form">
+                <h2>Client Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Log In</button>
+
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                    <p class="toggle-link">
+                        Don't have an account?| <a href="#" id="showRegister">Register here</a>
+                    </p>
+                    <p id="login-message" style="margin-top: 15px; color: red; font-weight: 700; display: none;"></p>
+                </form>
+            </div>
+
+            <div id="register-form">
+                <h2>Client Registration</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Contact Number</label>
+                        <input type="tel" id="reg-phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-confirm-password">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" name="confirm-password" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Create Account</button>
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+                    <p class="toggle-link">
+                        **Already have an account?** <a href="#" id="showLogin">Login here</a>
+                    </p>
+                    <p id="register-message" style="margin-top: 15px; color: #4CAF50; font-weight: 700; display: none;"></p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const loginFormDiv = document.getElementById('login-form');
+        const registerFormDiv = document.getElementById('register-form');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+
+        // Toggle functionality
+        function toggleForms(showForm) {
+            if (showForm === 'register') {
+                loginFormDiv.style.display = 'none';
+                registerFormDiv.style.display = 'block';
+                document.querySelector('.account-container').scrollTop = 0;
+            } else {
+                registerFormDiv.style.display = 'none';
+                loginFormDiv.style.display = 'block';
+                document.querySelector('.account-container').scrollTop = 0;
+            }
+        }
+
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('register');
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('login');
+        });
+
+        // Mock Login Submission
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const messageElement = document.getElementById('login-message');
+            // Mock successful login
+            messageElement.style.color = '#4CAF50';
+            messageElement.textContent = "Login successful! Redirecting to dashboard...";
+            messageElement.style.display = 'block';
+            setTimeout(() => messageElement.style.display = 'none', 5000);
+        });
+
+        // Mock Register Submission
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const messageElement = document.getElementById('register-message');
+            
+            if (password !== confirmPassword) {
+                messageElement.style.color = 'red';
+                messageElement.textContent = "Error: Passwords do not match.";
+                messageElement.style.display = 'block';
+            } else {
+                // Mock registration success
+                messageElement.style.color = '#4CAF50';
+                messageElement.textContent = "Registration successful! Please log in.";
+                messageElement.style.display = 'block';
+                document.getElementById('registerForm').reset();
+                
+                // Automatically switch to login form after a short delay
+                setTimeout(() => {
+                    toggleForms('login');
+                    messageElement.style.display = 'none';
+                }, 3000);
+            }
+        });
+    </script>
+</body>
+</html>
