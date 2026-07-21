@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - Serein Spa</title>
+    <title>About Us - Satori Spa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -48,6 +48,7 @@
             font-weight: 600;
             transition: all var(--transition-time);
             box-shadow: var(--shadow);
+            text-decoration: none;
         }
         
         /* --- Utility Classes --- */
@@ -120,14 +121,19 @@
             position: absolute;
             left: 0;
             bottom: 0;
+            height: 3px;
             width: 0;
-            height: 2px;
             background-color: var(--primary-color);
+            border-radius: 2px;
             transition: width var(--transition-time) ease-in-out;
         }
         
         .nav-link:hover::after, .nav-link.active::after {
             width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: none;
         }
 
         .book-now-btn {
@@ -264,14 +270,14 @@
 <body>
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">Serein Spa</a>
+            <a href="{% url 'massage_app:index' %}" class="logo">Satori Spa</a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link active">About</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:index' %}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:services' %}" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link active">About</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
             </ul>
         </div>
     </nav>
@@ -279,56 +285,43 @@
     <main>
         <section id="about-us" class="section-padding">
             <div class="container">
-                <h2>Our Journey to Tranquility</h2>
+                <h2>Our Journey to Satori</h2>
                 
                 <div class="story-box">
                     <h3>Mission & Vision</h3>
-                    <p>Serein Spa was founded on the belief that true wellness is achieved when the mind, body, and spirit are in harmony. Our mission is to provide an escape from the demands of daily life, offering therapeutic treatments delivered with exceptional care and professionalism.</p>
-                    <p>Our vision is to be the premier sanctuary for holistic rejuvenation, recognized for our commitment to quality, client comfort, and the use of natural, ethically sourced ingredients.</p>
+                    <p>Satori Spa Massage was founded on the belief that true wellness is achieved through the perfect balance of mind, body, and spirit. Our mission is to create a peaceful sanctuary where guests can escape the stress of daily life and experience genuine relaxation through professional, therapeutic touch.</p>
+                    <p>Our vision is to be a trusted haven for holistic healing and rejuvenation, known for our dedication to quality service, client comfort, and the use of natural, sustainably sourced products.</p>
                 </div>
 
                 <div class="story-box">
-                    <h3>The Serein Philosophy</h3>
-                    <p>The name "Serein" evokes a gentle, fine rain falling after sunset, symbolizing a calm, refreshing end to the day. This is the experience we strive to create. Our relaxation philosophy centers on **Holistic Care**, **Mindful Presence**, and **Personalized Rituals**. Every treatment is tailored to the individual, ensuring deep relaxation and lasting well-being.</p>
-                    <p style="font-style: italic; color: var(--accent-color); font-weight: 600;">"Where every touch is a step toward serenity."</p>
+                    <h3>💫 The Satori Philosophy</h3>
+                    <p>The word “Satori” comes from Japanese, meaning awakening or enlightenment. It reflects the calm clarity and renewed energy that every guest feels after each session.</p>
+                    <p>Our philosophy revolves around <strong>Holistic Care</strong>, <strong>Mindful Presence</strong>, and <strong>Personalized Healing</strong>. Every treatment at Satori Spa Massage is thoughtfully designed to restore harmony, ease tension, and awaken the senses — leading each client toward their own moment of serenity and self-discovery.</p>
+                    <p style="font-style: italic; color: var(--accent-color); font-weight: 600;">“Where every touch leads you to awakening.”</p>
                 </div>
                 
                 <h2 style="margin-top: 60px;">Meet Our Expert Team</h2>
                 <div class="team-grid">
-                    
+                    {% for emp in employees %}
                     <div class="team-member-card">
-                        <img src="https://picsum.photos/150/150?random=therapist1" alt="Photo of Maria" class="team-photo">
-                        <h4>Maria Chavez</h4>
-                        <p>Lead Massage Therapist</p>
+                        <h4>{{ emp.name }}</h4>
+                        <p>{{ emp.title }}</p>
+                        {% if emp.bio %}
+                        <p style="color:#555;font-weight:400;font-size:0.95rem;margin-top:8px;">{{ emp.bio }}</p>
+                        {% endif %}
                     </div>
-
+                    {% empty %}
                     <div class="team-member-card">
-                        <img src="https://picsum.photos/150/150?random=therapist2" alt="Photo of Alex" class="team-photo">
-                        <h4>Alex Santos</h4>
-                        <p>Aromatherapy Specialist</p>
+                        <h4>No team members yet</h4>
+                        <p>Add employees in the admin panel to show them here.</p>
                     </div>
-
-                    <div class="team-member-card">
-                        <img src="https://picsum.photos/150/150?random=therapist3" alt="Photo of Julia" class="team-photo">
-                        <h4>Julia Perez</h4>
-                        <p>Reflexology Expert</p>
-                    </div>
-
-                    <div class="team-member-card">
-                        <img src="https://picsum.photos/150/150?random=therapist4" alt="Photo of Ben" class="team-photo">
-                        <h4>Ben Dela Cruz</h4>
-                        <p>Deep Tissue Specialist</p>
-                    </div>
-
+                    {% endfor %}
                 </div>
 
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
-    </footer>
 
     <script>
         // JavaScript for Mobile Menu Toggle (Consistent)

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Service</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; }
+        .container { max-width: 400px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        h2 { margin-bottom: 20px; color: #c0414a; }
+        p { margin-bottom: 20px; }
+        button { padding: 10px 20px; background: #c0414a; color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #a8323a; }
+        a { display:block; margin-top:20px; color:#81b29a; text-align:center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Delete Service</h2>
+        <p>Are you sure you want to delete the service <strong>{{ service.name }}</strong>?</p>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Yes, Delete</button>
+        </form>
+        <a href="{% url 'massage_app:admin-dashboard' %}">Cancel</a>
+    </div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Services - Serein Spa</title>
+    <title>Our Services - Satori Spa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -33,7 +33,7 @@
             padding-top: 80px; /* Space for fixed navbar */
         }
 
-        a {
+        .nav-link {
             text-decoration: none;
             color: inherit;
             transition: color var(--transition-time);
@@ -48,6 +48,7 @@
             font-weight: 600;
             transition: all var(--transition-time);
             box-shadow: var(--shadow);
+            text-decoration: none;
         }
         
         /* --- Utility Classes --- */
@@ -86,6 +87,7 @@
             font-size: 1.8rem;
             font-weight: 600;
             color: var(--primary-color);
+            text-decoration: none;
         }
 
         .nav-menu {
@@ -113,14 +115,19 @@
             position: absolute;
             left: 0;
             bottom: 0;
+            height: 3px;
             width: 0;
-            height: 2px;
             background-color: var(--primary-color);
+            border-radius: 2px;
             transition: width var(--transition-time) ease-in-out;
         }
         
         .nav-link:hover::after, .nav-link.active::after {
             width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: none;
         }
 
         .book-now-btn {
@@ -129,6 +136,7 @@
             padding: 10px 20px;
             border-radius: 50px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-decoration: none;
         }
 
         .book-now-btn:hover {
@@ -230,6 +238,7 @@
             box-shadow: none;
             font-size: 0.9rem;
             font-weight: 400;
+            text-decoration: none;
         }
 
         .book-service-btn:hover {
@@ -297,14 +306,14 @@
 <body>
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">Serein Spa</a>
+            <a href="{% url 'massage_app:index' %}" class="logo">Satori Spa</a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="services.html" class="nav-link active">Services</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:index' %}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:services' %}" class="nav-link active">Services</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
             </ul>
         </div>
     </nav>
@@ -313,100 +322,36 @@
         <section id="services" class="section-padding">
             <div class="container">
                 <header class="services-header text-center">
-                    <h1>Our Sanctuary Services</h1>
+                    <h1>Our Services</h1>
                     <p style="color: #666; max-width: 600px; margin: 15px auto 50px;">Indulge in our curated selection of treatments designed to relax your body, refresh your mind, and rejuvenate your spirit.</p>
                 </header>
                 
                 <div class="services-grid">
+                    {% for service in services %}
                     <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=swedish" alt="Image of Swedish Massage" class="service-card-image">
+                        {% if service.image %}
+                            <img src="{{ service.image.url }}" alt="Service Image" class="service-card-image">
+                        {% else %}
+                            <img src="https://i.pinimg.com/736x/8f/b5/1c/8fb51ca15de5bb5bb4f3f467723ebf06.jpg" alt="Service Image" class="service-card-image">
+                        {% endif %}
                         <div class="service-card-content">
-                            <h3>Swedish Massage</h3>
-                            <p>A classic full-body massage using light to medium pressure to relieve muscle tension and promote total relaxation.</p>
+                            <h3>{{ service.name }}</h3>
+                            <p>{{ service.description }}</p>
                             <div class="service-details">
-                                <span class="duration-tag">Duration: 60 mins</span>
-                                <span class="price-tag">₱1,500</span>
-                                <a href="book-now.html?service=swedish" class="book-service-btn">Book</a>
+                                <span class="duration-tag">Duration: {{ service.duration }}</span>
+                                <span class="price-tag">₱{{ service.price }}</span>
+                                <a href="{% url 'massage_app:booknow' %}?service={{ service.id }}" class="book-service-btn">Book</a>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=hotstone" alt="Image of Hot Stone Therapy" class="service-card-image">
-                        <div class="service-card-content">
-                            <h3>Hot Stone Therapy</h3>
-                            <p>Smooth, heated stones are placed on key points of the body, offering deep heat and profound relaxation to melt away stress.</p>
-                            <div class="service-details">
-                                <span class="duration-tag">Duration: 90 mins</span>
-                                <span class="price-tag">₱2,200</span>
-                                <a href="book-now.html?service=hotstone" class="book-service-btn">Book</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=aroma" alt="Image of Aromatherapy Massage" class="service-card-image">
-                        <div class="service-card-content">
-                            <h3>Aromatherapy</h3>
-                            <p>A gentle massage combined with essential oils tailored to your needs, promoting emotional and physical healing.</p>
-                            <div class="service-details">
-                                <span class="duration-tag">Duration: 75 mins</span>
-                                <span class="price-tag">₱1,850</span>
-                                <a href="book-now.html?service=aroma" class="book-service-btn">Book</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=deeptissue" alt="Image of Deep Tissue Massage" class="service-card-image">
-                        <div class="service-card-content">
-                            <h3>Deep Tissue</h3>
-                            <p>Targets the deeper layers of muscle and connective tissue, ideal for chronic pain and stiffness.</p>
-                            <div class="service-details">
-                                <span class="duration-tag">Duration: 60 mins</span>
-                                <span class="price-tag">₱1,700</span>
-                                <a href="book-now.html?service=deeptissue" class="book-service-btn">Book</a>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=footspa" alt="Image of Foot Spa" class="service-card-image">
-                        <div class="service-card-content">
-                            <h3>Foot Spa & Reflexology</h3>
-                            <p>A cleansing and soothing foot soak followed by pressure point massage to improve circulation and energy flow.</p>
-                            <div class="service-details">
-                                <span class="duration-tag">Duration: 45 mins</span>
-                                <span class="price-tag">₱950</span>
-                                <a href="book-now.html?service=footspa" class="book-service-btn">Book</a>
-                            </div>
-                        </div>
-                    </div>
-
-                     <div class="service-card">
-                        <img src="https://picsum.photos/400/200?random=couples" alt="Image of Couples Package" class="service-card-image">
-                        <div class="service-card-content">
-                            <h3>Couples Retreat</h3>
-                            <p>Enjoy a simultaneous massage experience with a partner in our specialized couples suite. Includes complimentary tea.</p>
-                            <div class="service-details">
-                                <span class="duration-tag">Duration: 90 mins</span>
-                                <span class="price-tag">₱4,500</span>
-                                <a href="book-now.html?service=couples" class="book-service-btn">Book</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                    {% empty %}
+                    <div style="text-align:center; color:#888;">No services found.</div>
+                    {% endfor %}
                 
-                <div class="text-center" style="margin-top: 60px;">
-                    <a href="book-now.html" class="book-now-btn" style="padding: 15px 40px;">View All & Book Now</a>
-                </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
-    </footer>
 
     <script>
         // JavaScript for Mobile Menu Toggle (Copied from index.html)
@@ -424,5 +369,31 @@
             }
         }));
     </script>
+
+    <script>
+        // Auto-refresh services page when admin updates services.
+        (function(){
+            let current = null;
+            function fetchVersion(){
+                fetch('{% url "massage_app:services-version" %}', {credentials: 'same-origin'})
+                .then(r => r.json()).then(j => {
+                    if (!current) { current = j.version; return; }
+                    if (j.version && current !== j.version) {
+                        // version changed — reload to show updated services
+                        console.log('Services version changed, reloading page.');
+                        window.location.reload();
+                    }
+                }).catch(err => {
+                    // ignore errors silently
+                    // console.error('version check failed', err);
+                });
+            }
+            // initial fetch and then poll every 5 seconds
+            fetchVersion();
+            setInterval(fetchVersion, 5000);
+        })();
+    </script>
+
+
 </body>
 </html>

@@ -10,10 +10,16 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Media files (user-uploaded images)
+import os
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +31,9 @@ SECRET_KEY = 'django-insecure-c*1lyzpahwh8(hnl9$lcupoqpwhk(t$d*3i5)jx$m*2k3p$774
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# During local testing include localhost and ngrok domains
+# Note: some ngrok free hostnames use the ngrok-free.dev suffix
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok.io', '.ngrok-free.dev']
 
 
 # Application definition
@@ -76,13 +84,13 @@ WSGI_APPLICATION = 'MassageSpa.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'massage_spa',
+        'NAME': 'massage_spa_db',
         'USER': 'spa_user',
-        'PASSWORD': 'lebor123',
+        'PASSWORD': 'your_password',
         'HOST': 'localhost',
         'PORT': '3306',
     }
-}
+}   
 
 
 # Password validation
@@ -120,6 +128,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+
+# Email settings for Gmail SMTP
+EMAIL_BACKEND = 'massage_app.mail_backend.CertifiSMTPBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'rodelcabanos737@gmail.com'
+EMAIL_HOST_PASSWORD = 'pqvo vwfy zyrn cvny'       
+DEFAULT_FROM_EMAIL = 'rodelcabanos737@gmail.com'
+# Optional: path to a custom CA bundle (PEM) to trust when your network
+# uses a proxy/AV that resigns TLS. Set this to a path relative to BASE_DIR
+# or an absolute path. Place the CA PEM at the path you choose.
+CUSTOM_CA_PATH = BASE_DIR / 'certs' / 'proxy-ca.pem'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

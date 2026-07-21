@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Serein Spa</title>
+    <title>Contact Us - Satori Spa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -48,6 +48,7 @@
             font-weight: 600;
             transition: all var(--transition-time);
             box-shadow: var(--shadow);
+            text-decoration: none;
         }
         
         /* --- Utility Classes --- */
@@ -121,14 +122,19 @@
             position: absolute;
             left: 0;
             bottom: 0;
+            height: 3px;
             width: 0;
-            height: 2px;
             background-color: var(--primary-color);
+            border-radius: 2px;
             transition: width var(--transition-time) ease-in-out;
         }
         
         .nav-link:hover::after, .nav-link.active::after {
             width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: none;
         }
 
         .book-now-btn {
@@ -153,26 +159,10 @@
             color: var(--text-dark);
         }
 
-        /* --- Contact Layout --- */
-        .contact-content {
-            display: flex;
-            gap: 40px;
-        }
-
-        .contact-form-section {
-            flex: 1;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-        
-        .contact-info-map {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
+        /* --- Simple Contact Layout --- */
+        .contact-content { max-width: 900px; margin: 0 auto; }
+        .contact-card, .contact-form-section { background-color: #fff; border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 28px; }
+        .contact-stack { display: grid; grid-template-columns: 1fr; gap: 24px; }
         
         .form-group {
             margin-bottom: 20px;
@@ -214,41 +204,9 @@
             transform: translateY(-1px);
         }
 
-        /* --- Info and Map Styles --- */
-        .contact-details {
-            padding: 30px;
-            background-color: #fff;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .detail-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-        }
-
-        .detail-item strong {
-            color: var(--primary-color);
-            margin-right: 15px;
-            font-size: 1.5rem; /* Placeholder for icon */
-        }
-
-        .map-embed {
-            width: 100%;
-            height: 300px;
-            background-color: #e0e0e0;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-        
-        .map-embed iframe {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
+        /* --- Simple info list --- */
+        .detail-item { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; font-size: 1.05rem; }
+        .detail-item .icon { color: var(--primary-color); font-size: 1.2rem; width: 24px; text-align: center; }
         
         /* --- Footer (Consistent Styling) --- */
         .footer {
@@ -260,18 +218,6 @@
         }
 
         /* --- Responsive Design --- */
-        @media (max-width: 992px) {
-            .contact-content {
-                flex-direction: column;
-            }
-            .contact-info-map {
-                order: -1; /* Move info/map above form on mobile */
-            }
-            .map-embed {
-                height: 250px;
-            }
-        }
-        
         @media (max-width: 768px) {
             /* Navbar styles inherited from previous files */
             .nav-menu {display: none; flex-direction: column;}
@@ -284,14 +230,14 @@
 <body>
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">Serein Spa</a>
+            <a href="{% url 'massage_app:index' %}" class="logo">Satori Spa</a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link active">Contact</a></li>
-                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:index' %}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:services' %}" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link active">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
             </ul>
         </div>
     </nav>
@@ -300,59 +246,26 @@
         <section id="contact" class="section-padding">
             <div class="container">
                 <h2>Get in Touch</h2>
-                
+
                 <div class="contact-content">
-                    
-                    <div class="contact-info-map">
-                        <div class="contact-details">
-                            <h3 style="color: var(--accent-color); margin-bottom: 25px;">Our Information</h3>
-                            <div class="detail-item">
-                                <strong>&#9990;</strong> <span>(02) 1234-5678</span>
-                            </div>
-                            <div class="detail-item">
-                                <strong>&#9993;</strong> <span>hello@sereinspa.com</span>
-                            </div>
-                            <div class="detail-item">
-                                <strong>&#127968;</strong> <span>G/F Serenity Mall, Relax St., Makati City, 1200</span>
-                            </div>
+                    <div class="contact-stack">
+                        <div class="contact-card">
+                            <h3 style="color: var(--accent-color); margin-bottom: 12px;">Contact Details</h3>
+                            <div class="detail-item"><span class="icon">📞</span><span id="contactPhone">09321456787</span></div>
+                            <div class="detail-item"><span class="icon">✉️</span><span id="contactEmail">hello@satorispa.com</span></div>
+                            <div class="detail-item"><span class="icon">🏠</span><span id="contactAddress">San Fermin, Cauayan City, Isabela</span></div>
                         </div>
-                        
-                        <div class="map-embed">
-                            <iframe 
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3861.737100868205!2d121.05315831485695!3d14.55160898982362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3397c674e797e555%3A0xcf82c2b7405231c5!2sAyala%20Triangle%20Gardens!5e0!3m2!1sen!2sph!4v1638892800000!5m2!1sen!2sph" 
-                                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
-                            </iframe>
+
+                        <div class="contact-form-section">
+                            <h3 style="color: var(--primary-color); margin-bottom: 16px;">Contact Us</h3>
+                            <p style="margin-top:8px;">To contact us please email <a href="mailto:hello@satorispa.com">hello@satorispa.com</a> or call <strong id="contactPhoneInline">09321456787</strong>. Please use email or phone for inquiries.</p>
                         </div>
                     </div>
-
-                    <div class="contact-form-section">
-                        <h3 style="color: var(--primary-color); margin-bottom: 25px;">Send Us a Message</h3>
-                        <form id="contactForm">
-                            <div class="form-group">
-                                <label for="name">Your Name</label>
-                                <input type="text" id="name" name="name" required placeholder="Enter your full name">
-                            </div>
-                            <div class="form-group">
-                                <label for="email">Email Address</label>
-                                <input type="email" id="email" name="email" required placeholder="Enter your email address">
-                            </div>
-                            <div class="form-group">
-                                <label for="message">Message</label>
-                                <textarea id="message" name="message" rows="5" required placeholder="How can we help you?"></textarea>
-                            </div>
-                            <button type="submit" class="submit-btn">Send Message</button>
-                            <p id="form-message" class="text-center" style="margin-top: 20px; color: var(--text-dark); display: none;"></p>
-                        </form>
-                    </div>
-
                 </div>
             </div>
         </section>
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
-    </footer>
 
     <script>
         // JavaScript for Mobile Menu Toggle (Consistent)
@@ -369,24 +282,21 @@
             }
         }));
         
-        // Form Submission Handler
-        document.getElementById('contactForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            const formMessage = document.getElementById('form-message');
-            
-            // In a real application, you would use fetch() here to submit data to a backend.
-            formMessage.textContent = 'Thank you for your message! We will get back to you within 24 hours.';
-            formMessage.style.color = 'var(--primary-color)';
-            formMessage.style.display = 'block';
-            
-            // Clear the form after a simulated successful submission
-            this.reset();
-            
-            // Hide message after a few seconds
-            setTimeout(() => {
-                formMessage.style.display = 'none';
-            }, 5000);
-        });
+        // Allow overriding contact info from a single place (optional):
+        // If you set window.SATORI_CONTACT = { phone, email, address } before this script,
+        // it will populate the contact box automatically.
+        const CONTACT = window.SATORI_CONTACT || {
+            phone: '09321456787',
+            email: 'hello@satorispa.com',
+            address: 'San Fermin, Cauayan City, Isabela'
+        };
+        document.getElementById('contactPhone').textContent = CONTACT.phone;
+        document.getElementById('contactEmail').textContent = CONTACT.email;
+        document.getElementById('contactAddress').textContent = CONTACT.address;
+
+        // Contact form removed: keep a simple inline contact phone element updated
+        var contactPhoneInline = document.getElementById('contactPhoneInline');
+        if (contactPhoneInline) contactPhoneInline.textContent = CONTACT.phone;
     </script>
 </body>
 </html>

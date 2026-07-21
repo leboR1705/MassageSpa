@@ -1,9 +1,17 @@
+                        <!-- Booking confirmation modal -->
+                        <div id="bookingModal" role="dialog" aria-modal="true" aria-hidden="true" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:2000; align-items:center; justify-content:center;">
+                            <div class="modal-card" role="document" style="background:#fff; padding:22px; border-radius:12px; max-width:420px; box-shadow:0 10px 30px rgba(0,0,0,0.12); text-align:center;">
+                                <h4 style="color:var(--primary-color); margin-bottom:8px;">Booking Successful!</h4>
+                                <p style="color:#444; margin-bottom:16px;">Thank you for booking! We will send a Gmail message to your email if your booking is accepted or cancelled.</p>
+                                <button type="button" class="ok-btn" id="bookingModalOk" style="background:var(--accent-color); color:var(--text-light); padding:10px 18px; border-radius:10px; font-weight:700; border:none; cursor:pointer;">OK</button>
+                            </div>
+                        </div>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Now - Serein Spa</title>
+    <title>Book Now - Satori Spa</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -48,10 +56,19 @@
             font-weight: 600;
             transition: all var(--transition-time);
             box-shadow: var(--shadow);
+            text-decoration: none;
         }
         
         /* --- Utility Classes --- */
         .container {
+            /* Match other pages so navbar alignment is identical */
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Narrow container for page content only */
+        .container-narrow {
             max-width: 800px;
             margin: 0 auto;
             padding: 0 20px;
@@ -81,7 +98,7 @@
         .nav-container {
             display: flex;
             justify-content: space-between;
-            align-items: right;
+            align-items: center; /* keep consistent with other pages */
             padding: 15px 20px;
         }
 
@@ -103,7 +120,7 @@
         .nav-link {
             font-weight: 400;
             color: var(--text-dark);
-            padding: 10px 0; /* Ensures vertical alignment */
+            padding: 5px 0; /* match other pages */
             position: relative;
         }
 
@@ -115,50 +132,33 @@
             content: '';
             position: absolute;
             left: 0;
-            bottom: 0; 
+            bottom: 0;
+            height: 3px;
             width: 0;
-            height: 2px;
             background-color: var(--primary-color);
+            border-radius: 2px;
             transition: width var(--transition-time) ease-in-out;
         }
         
         .nav-link:hover::after, .nav-link.active::after {
             width: 100%;
+            height: 3px;
+            background-color: var(--primary-color);
+            border-radius: 2px;
+            transition: none;
         }
-
-        /* --- FIX APPLIED HERE: Styling the 'Book Now' link as a regular nav-link --- */
-        .book-now-link-text {
-            /* Inherit the base nav-link styles */
-            font-weight: 400;
-            color: var(--text-dark);
-            padding: 10px 0; 
-            position: relative;
-            display: inline-block;
+        /* --- Book Now pill button (match other pages) --- */
+        .book-now-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
-        
-        /* Styling for the specific 'Book Now' element on desktop */
-        @media (min-width: 769px) {
-            .book-now-link-text {
-                font-weight: 600; /* Optional: Make it slightly bolder to stand out */
-                color: var(--accent-color); /* Optional: Give it an accent color */
-            }
-            /* Add the underline effect back to the 'Book Now' link */
-            .book-now-link-text::after {
-                content: '';
-                position: absolute;
-                left: 0;
-                bottom: 0; 
-                width: 0;
-                height: 2px;
-                background-color: var(--accent-color);
-                transition: width var(--transition-time) ease-in-out;
-            }
-            .book-now-link-text:hover::after, .book-now-link-text.active::after {
-                width: 100%;
-            }
-            .book-now-link-text:hover {
-                color: var(--primary-color);
-            }
+        .book-now-btn:hover {
+            background-color: #9C83A4;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
         }
         
         /* --- Mobile Toggle --- */
@@ -170,13 +170,70 @@
             color: var(--text-dark);
         }
 
-        /* --- Form Styles Omitted for brevity (No Change) --- */
+        /* --- Booking Layout & Card Styles --- */
+        .booking-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
         .booking-form-box {
             background-color: #fff;
-            padding: 40px;
+            padding: 30px 30px 24px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
+        .summary-card {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+        .summary-card h3 { color: var(--accent-color); margin-bottom: 14px; }
+        .summary-row { display: flex; justify-content: space-between; margin: 8px 0; color: #555; }
+        .summary-row strong { color: var(--text-dark); }
+        .summary-total { border-top: 1px dashed #e5e5e5; margin-top: 12px; padding-top: 12px; font-weight: 700; font-size: 1.1rem; }
+
+        /* --- Form controls --- */
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark); }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 4px rgba(163,201,168,0.15); }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        /* removed addons UI - no longer used */
+        .addon-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: #555; }
+        .addon-item input { width: auto; }
+
+        .confirm-btn {
+            background-color: var(--accent-color);
+            color: var(--text-light);
+            padding: 14px 22px;
+            border-radius: 28px;
+            font-weight: 700;
+            width: 100%;
+            margin-top: 10px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .confirm-btn:hover { background-color: #9C83A4; transform: translateY(-1px); }
+
+        .helper { color: #888; font-size: 0.85rem; margin-top: -6px; margin-bottom: 12px; }
+
+        /* faded state used after booking to indicate cleared selection */
+        .faded { opacity: 0.45; transition: opacity 400ms ease; }
         
         /* --- Footer (Consistent Styling) --- */
         .footer {
@@ -206,31 +263,20 @@
                 display: flex;
             }
 
+            .booking-layout { grid-template-columns: 1fr; }
             .nav-item {
                 margin: 10px 0;
-                text-align: left; 
-                padding-left: 20px; 
+                text-align: left;
+                padding-left: 20px;
             }
-            
             .nav-item:last-child {
                 margin-top: 20px;
+                padding-left: 20px;
             }
-
-            .nav-link, .book-now-link-text {
-                 display: inline-block; 
-                 margin: 0;
-                 width: auto;
-            }
-            
-            /* Re-style Book Now for mobile to look like a standard link */
-            .book-now-link-text {
-                font-weight: 400;
-                color: var(--text-dark);
-                /* Ensure mobile underline color is correct */
-            }
-            
-            .book-now-link-text.active::after {
-                background-color: var(--primary-color);
+            .book-now-btn {
+                width: auto;
+                margin: 0;
+                display: inline-block;
             }
             
             .menu-toggle {
@@ -238,22 +284,59 @@
             }
             h2 {font-size: 2rem;}
         }
+        /* Modal styles for booking confirmation popup */
+        #bookingModal {
+            position: fixed;
+            inset: 0;
+            /* keep element in flow so we can animate opacity */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0,0,0,0.45);
+            z-index: 2000;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 220ms ease;
+        }
+        #bookingModal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+         #bookingModal .modal-card {
+             background: #fff;
+             padding: 22px;
+             border-radius: 12px;
+             width: 100%;
+             max-width: 420px;
+             box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+             text-align: center;
+         }
+        #bookingModal .modal-card h4 { color: var(--primary-color); margin-bottom: 8px; }
+        #bookingModal .modal-card p { color: #444; margin-bottom: 16px; }
+        #bookingModal .modal-card .ok-btn {
+            background: var(--accent-color);
+            color: var(--text-light);
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <div class="container nav-container" style="display: flex; justify-content: space-between; align-items: center;">
-            <a href="index.html" class="logo">Serein Spa</a>
-            <div style="display: flex; align-items: center; gap: 32px; margin-left: auto;">
-                <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
-                <ul class="nav-menu" id="nav-menu" style="display: flex; align-items: center; gap: 32px;">
-                    <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
-                    <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                    <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                    <li class="nav-item"><a href="book-now.html" class="book-now-btn active">Book Now</a></li>
-                </ul>
-            </div>
+        <div class="container nav-container">
+            <a href="{% url 'massage_app:index' %}" class="logo">Satori Spa</a>
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
+            <ul class="nav-menu" id="nav-menu">
+                <li class="nav-item"><a href="{% url 'massage_app:index' %}" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:services' %}" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
+            </ul>
         </div>
     </nav>
 
@@ -262,36 +345,140 @@
             <div class="container">
                 <h2>Secure Your Serenity</h2>
                 
-                <div class="booking-form-box">
-                    <form id="bookingForm">
-                        
-                        <h3 style="color: var(--accent-color); margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Your Details</h3>
-                        <div class="form-group">
-                            <label for="customerName">Full Name</label>
-                            <input type="text" id="customerName" name="customerName" required placeholder="Enter your full name">
-                        </div>
-                        
-                        <hr style="border-color: var(--secondary-color); margin: 30px 0;">
-                        
-                        <h3 style="color: var(--accent-color); margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Select Service & Schedule</h3>
-                        <div class="form-group">
-                            <label for="serviceSelection">Service Selection</label>
-                            <select id="serviceSelection" name="serviceSelection" required>
-                                <option value="">--- Select a Service ---</option>
-                                <option value="swedish">Swedish Massage (60 mins, ₱1,500)</option>
+                <div class="booking-layout">
+                    <div class="booking-form-box">
+                        {% if success %}
+                            <div class="success-message" style="display:none">{{ success }}</div>
+                        {% endif %}
+                        <form id="bookingForm" method="POST" action="{% url 'massage_app:booknow' %}">
+                            {% csrf_token %}
+                            <h3 style="color: var(--accent-color); margin-bottom: 14px;">Your Details</h3>
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label for="customerName">Full Name</label>
+                                    <input type="text" id="customerName" name="customerName" required placeholder="Enter your full name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="customerPhone">Mobile Number</label>
+                                    <input type="tel" id="customerPhone" name="customerPhone" required placeholder="09XX-XXX-XXXX">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="customerAddress">Complete Address</label>
+                                <input type="text" id="customerAddress" name="customerAddress" required placeholder="Enter your complete address">
+                            </div>
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label for="customerEmail">Email Address</label>
+                                    <input type="email" id="customerEmail" name="customerEmail" required placeholder="you@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="therapistPref">Therapist</label>
+                                    <select id="therapistPref" name="therapistPref">
+                                        <!-- Placeholder (not a selectable choice) -->
+                                        <option value="" disabled selected>Select preference</option>
+                                        <!-- (No explicit 'No preference' option) -->
+                                        {% for emp in employees %}
+                                            {% if emp.status == 'On Leave' %}
+                                                <option value="{{ emp.name }}" disabled>{{ emp.name }}{% if emp.title %} — {{ emp.title }}{% endif %} (On Leave)</option>
+                                            {% else %}
+                                                <option value="{{ emp.name }}">{{ emp.name }}{% if emp.title %} — {{ emp.title }}{% endif %}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <h3 style="color: var(--accent-color); margin: 22px 0 10px;">Select Service & Schedule</h3>
+                            <div class="form-group">
+                                <label for="serviceSelection">Service Selection</label>
+                                <select id="serviceSelection" name="serviceSelection" required>
+                                    <option value="">--- Select a Service ---</option>
+                                    {% for service in services %}
+                                        <option value="{{ service.id }}" data-price="{{ service.price }}" data-duration="{{ service.duration }}" {% if selected_service and selected_service.id == service.id %}selected{% endif %}>
+                                            {{ service.name }} ({{ service.duration }}, ₱{{ service.price }})
+                                        </option>
+                                    {% endfor %}
                                 </select>
-                        </div>
-                        
-                        <button type="submit" class="confirm-btn">Confirm Booking</button>
-                    </form>
+                            </div>
+                            <div class="two-col">
+                                <div class="form-group">
+                                    <label for="dateSelection">Date</label>
+                                    <input type="date" id="dateSelection" name="dateSelection" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="timeSelection">Time</label>
+                                    <input type="time" id="timeSelection" name="timeSelection" required>
+                                </div>
+                            </div>
+
+
+                            <button type="submit" class="confirm-btn">Confirm Booking</button>
+                        </form>
+
+                    </div>
+                    <aside class="summary-card">
+                        <h3>Your Summary</h3>
+                        <div class="summary-row"><span>Service</span><strong id="sumService">
+                            {% if selected_service %}
+                                {{ selected_service.name }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </strong></div>
+                        <div class="summary-row"><span>Duration</span><strong id="sumDuration">
+                            {% if selected_service %}
+                                {{ selected_service.duration }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </strong></div>
+                        <div class="summary-row"><span>Base Price</span><strong id="sumBase">
+                            {% if selected_service %}
+                                ₱{{ selected_service.price }}
+                            {% else %}
+                                ₱0
+                            {% endif %}
+                        </strong></div>
+                        <div class="summary-row"><span>Schedule</span><strong id="sumSchedule">—</strong></div>
+                        <div class="summary-total summary-row"><span>Total</span><strong id="sumTotal">
+                            {% if selected_service %}
+                                ₱{{ selected_service.price }}
+                            {% else %}
+                                ₱0
+                            {% endif %}
+                        </strong></div>
+                    </aside>
                 </div>
             </div>
         </section>
     </main>
 
     <script>
-        // Data for services and JavaScript logic for mobile menu/form submission...
-        // ... (This code remains the same as previous versions)
+        // Booking confirmation modal logic
+        window.addEventListener('DOMContentLoaded', function() {
+            var modal = document.getElementById('bookingModal');
+            var okBtn = document.getElementById('bookingModalOk');
+            // If backend sets success message, show modal
+            var successMsg = document.querySelector('.booking-form-box .success-message');
+            if (successMsg) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+                modal.setAttribute('aria-hidden', 'false');
+            }
+            okBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+                modal.setAttribute('aria-hidden', 'true');
+                // Remove ?success=1 from URL so modal does not reappear
+                if (window.location.search.includes('success=1')) {
+                    var url = window.location.origin + window.location.pathname;
+                    window.history.replaceState({}, document.title, url);
+                }
+            });
+        });
+
+        // Data + logic for services, pricing, and live summary
         const menuToggle = document.getElementById('menu-toggle');
         const navMenu = document.getElementById('nav-menu');
 
@@ -304,6 +491,80 @@
                 navMenu.classList.remove('active');
             }
         }));
-    </script>
-</body>
+
+        const services = {
+           
+            hotstone: { name: 'Hot Stone Therapy', price: 2200, duration: '90 mins' },
+            aroma: { name: 'Aromatherapy', price: 1850, duration: '75 mins' },
+            deeptissue: { name: 'Deep Tissue', price: 1700, duration: '60 mins' },
+            footspa: { name: 'Foot Spa & Reflexology', price: 950, duration: '45 mins' },
+            couples: { name: 'Couples Retreat', price: 4500, duration: '90 mins' }
+        };
+
+        const serviceSelect = document.getElementById('serviceSelection');
+        // NOTE: service <option> elements are rendered from the backend; do not append client-side options here.
+
+        // Preselect via query param
+        const params = new URLSearchParams(location.search);
+        const svc = params.get('service');
+        if (svc && services[svc]) {
+            serviceSelect.value = svc;
+        }
+
+        // Summary elements
+        const sumService = document.getElementById('sumService');
+        const sumDuration = document.getElementById('sumDuration');
+        const sumBase = document.getElementById('sumBase');
+        const sumSchedule = document.getElementById('sumSchedule');
+        const sumTotal = document.getElementById('sumTotal');
+        const helper = document.getElementById('serviceHelper');
+
+        function peso(n){ return `₱${Number(n||0).toLocaleString()}`; }
+
+        function updateSummary(){
+            const key = serviceSelect && serviceSelect.value;
+            const svcData = services[key];
+            const date = document.getElementById('dateSelection') ? document.getElementById('dateSelection').value : '';
+            const time = document.getElementById('timeSelection') ? document.getElementById('timeSelection').value : '';
+
+            // No addons in summary — compute base from selected option or client-side map
+            const selOpt = serviceSelect && serviceSelect.selectedOptions && serviceSelect.selectedOptions[0];
+            if (svcData){
+                sumService.textContent = svcData.name;
+                sumDuration.textContent = svcData.duration;
+                sumBase.textContent = peso(svcData.price);
+                if (helper) helper.style.display = 'none';
+            } else if (selOpt && selOpt.value !== ''){
+                const optText = (selOpt.textContent || selOpt.innerText || '').split('(')[0].trim();
+                const optPrice = selOpt.dataset && selOpt.dataset.price ? Number(selOpt.dataset.price) : 0;
+                const optDur = selOpt.dataset && selOpt.dataset.duration ? selOpt.dataset.duration : '—';
+                sumService.textContent = optText || '—';
+                sumDuration.textContent = optDur;
+                sumBase.textContent = peso(optPrice);
+                if (helper) helper.style.display = 'none';
+            } else {
+                sumService.textContent = '—';
+                sumDuration.textContent = '—';
+                sumBase.textContent = peso(0);
+                if (helper) helper.style.display = '';
+            }
+
+            sumSchedule.textContent = (date && time) ? `${date} • ${time}` : '—';
+
+            const baseNumeric = (svcData && svcData.price) ? Number(svcData.price) : (selOpt && selOpt.dataset && Number(selOpt.dataset.price || 0));
+            const total = (Number(baseNumeric) || 0);
+            sumTotal.textContent = peso(total);
+        }
+
+        // Listeners
+        serviceSelect.addEventListener('change', updateSummary);
+        document.getElementById('dateSelection').addEventListener('change', updateSummary);
+        document.getElementById('timeSelection').addEventListener('change', updateSummary);
+
+        // Initial paint
+        updateSummary();
+
+        // Remove demo submit handler so form submits to Django backend
+     </script>
+ </body>
 </html>

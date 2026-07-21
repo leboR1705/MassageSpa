@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Satori Spa</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -20,11 +20,17 @@
         }
 
         /* Base Admin Styles */
-        * { box-sizing: border-box; 
-            margin: 0; padding: 0; 
-        }
-       
-          body { 
+                * { box-sizing: border-box; 
+                        margin: 0; padding: 0; 
+                }
+
+                /* Prevent layout shift when scrollbars appear by reserving
+                     space for the scrollbar (modern browsers). This keeps the
+                     sidebar and content from jumping when the bookings list
+                     becomes long and the page scrolls. */
+                html, body { scrollbar-gutter: stable both-edges; }
+
+                    body { 
               font-family: 'Poppins', sans-serif; 
               background-color: var(--color-bg-light); 
               color: var(--color-text-dark);
@@ -51,6 +57,18 @@
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.2);
             display: flex; /* allow vertical layout and pushing logout to bottom */
             flex-direction: column;
+        }
+
+        /* Keep the sidebar out of the document flow so it doesn't push/pad the main
+           content when long lists appear. On small screens this is reverted. */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 2000;
         }
 
         .sidebar h2 {
@@ -94,7 +112,7 @@
         }
         
         /* Place logout at the bottom of the nav */
-    .sidebar nav a.logout-link { margin-top: auto; margin-bottom: 12px; }
+    .sidebar nav a.logout-link { margin-top: auto; margin-bottom: 28px; padding: 14px 18px; }
         .sidebar nav a.logout-link:hover {
             background-color: #884d5b;
             border-left: 4px solid var(--color-accent);
@@ -105,6 +123,8 @@
         .main-content {
             flex-grow: 1;
             padding: 30px;
+            /* Reserve space for the fixed sidebar so main content doesn't sit under it */
+            margin-left: 250px;
             background-color: var(--color-bg-light);
         }
 
@@ -219,6 +239,7 @@
         .data-table th, .data-table td {
             padding: 8px 10px; /* reduced padding to tighten table */
             border-bottom: 1px solid #eee;
+            vertical-align: middle; /* ensure cells are vertically centered */
         }
         /* Keep headers/titles readable, make the cell values smaller */
         .data-table th {
@@ -259,26 +280,33 @@
         /* Ensure status chevron sits at the right side of the cell */
         .data-table td { position: relative; }
         /* Make status badge and chevron separate elements (not overlapping) */
-        .status-cell { display: flex; align-items: center; justify-content: flex-start; gap: 10px; }
+        .status-cell { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 8px; 
+        }
         .status-toggle {
             color: #7a7a7a;
             font-size: 0.95em;
             transition: color 0.15s ease, transform 0.12s ease;
-            margin-left: 6px;
             background: transparent;
             padding: 2px;
+            cursor: pointer;
         }
         .status-toggle:hover { color: var(--color-primary); transform: scale(1.06); }
-        /* ensure badge has comfortable spacing but not huge padding */
-        .status-badge { padding-right: 12px; }
 
         .status-badge {
-            display: inline-block;
-            padding: 5px 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
             border-radius: 20px;
             font-size: 0.8em;
             font-weight: 600;
             text-align: center;
+            line-height: 1;
+            white-space: nowrap;
         }
         .status-confirmed { background-color: #d4edda; color: #155724; }
         .status-pending { background-color: #fff3cd; color: #856404; }
@@ -336,11 +364,13 @@
         @media (max-width: 768px) {
             .dashboard-container { flex-direction: column; }
             .sidebar { width: 100%; padding: 20px 0; }
+            /* Revert fixed positioning on small screens so the sidebar flows naturally */
+            .sidebar { position: static; height: auto; overflow: visible; }
             .sidebar nav { display: flex; overflow-x: auto; justify-content: space-around; }
             .sidebar nav a { padding: 6px 10px; border-left: none; border-bottom: 4px solid transparent; font-size: 0.95rem; }
             .sidebar nav a:hover, .sidebar nav a.active { border-left: none; border-bottom: 4px solid var(--color-primary); }
             .sidebar nav a i { margin-right: 5px; }
-            .main-content { padding: 20px; }
+            .main-content { padding: 20px; margin-left: 0; }
             .stats-grid { grid-template-columns: 1fr; }
             .header-bar { flex-direction: column; align-items: flex-start; gap: 10px; }
             .data-table td, .data-table th { font-size: 0.82em; padding: 6px 8px; }
@@ -364,14 +394,16 @@
                 <a href="#" data-target="bookings"><i class="fas fa-calendar-check"></i> Bookings</a>
                 <a href="#" data-target="services"><i class="fas fa-spa"></i> Services</a>
                 <a href="#" data-target="employee"><i class="fas fa-user-tie"></i> Employee</a>
-                <a href="#" data-target="reports"><i class="fas fa-chart-line"></i> Reports</a>
-                <a href="#" data-target="settings"><i class="fas fa-cog"></i> Settings</a>
 
-                <a href="{% url 'massage_app:login' %}" class="logout-link" style="margin-top: 30px;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                <a href="{% url 'massage_app:logout' %}" class="logout-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
             </nav>
         </div>
 
         <div class="main-content">
+            <!-- Hidden form to render CSRF token for JS-initiated requests -->
+            <form id="svc-delete-form" method="post" style="display:none;">
+                {% csrf_token %}
+            </form>
             <div class="header-bar">
                 <h1 id="content-title">Dashboard Overview</h1>
                 <div class="admin-profile">
@@ -387,24 +419,20 @@
             <section id="overview" class="content-section active">
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="value">3</div>
-                        <div class="label">New Bookings Today</div>
+                        <div class="value" id="bookings-today-value">{{ new_booking_count }}</div>
+                        <div class="label">Bookings Today</div>
                     </div>
                     <div class="stat-card">
-                        <div class="value">₱15.5K</div>
-                        <div class="label">Revenue (This Week)</div>
+                        <div class="value">₱{{ revenue_this_month|floatformat:2 }}</div>
+                        <div class="label">Revenue (This Month)</div>
                     </div>
                     <div class="stat-card">
-                        <div class="value">96%</div>
-                        <div class="label">Client Satisfaction</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="value">3</div>
+                        <div class="value">{{ active_therapists|length }}</div>
                         <div class="label">Active Therapists</div>
                     </div>
                 </div>
 
-                <h2 class="section-title-admin">Recent Completed Bookings</h2>
+                <h2 class="section-title-admin">All Completed Bookings</h2>
                 <div class="data-table-container">
                     <table class="data-table">
                         <thead>
@@ -415,37 +443,24 @@
                                 <th>Contact</th>
                                 <th>Service</th>
                                 <th>Date & Time</th>
-                                <th>Payment</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody id="overview-bookings-body">
-                            <tr>
-                                <td>B-1001</td>
-                                <td>Jane Doe</td>
-                                <td>jane.doe@example.com</td>
-                                <td>0917-555-0101</td>
-                                <td>Hot Stone Therapy</td>
-                                <td>Oct 26, 12:00 PM</td>
-                                <td>Gcash</td>
-                            </tr>
-                            <tr>
-                                <td>B-1002</td>
-                                <td>Mark Smith</td>
-                                <td>mark.smith@example.com</td>
-                                <td>0917-555-0102</td>
-                                <td>Swedish Massage (60)</td>
-                                <td>Oct 26, 02:30 PM</td>
-                                <td>Cash on Arrival</td>
-                            </tr>
-                            <tr>
-                                <td>B-1003</td>
-                                <td>Anna Lee</td>
-                                <td></td>
-                                <td></td>
-                                <td>Aromatherapy</td>
-                                <td>Oct 27, 10:00 AM</td>
-                                <td>Credit Card</td>
-                            </tr>
+                            {% comment %} Render completed bookings with sequential numbering starting at 1 {% endcomment %}
+                            {% for booking in completed_bookings %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ booking.customer_name }}</td>
+                                    <td>{{ booking.customer_email }}</td>
+                                    <td>{{ booking.customer_phone }}</td>
+                                    <td>{% if booking.service %}{{ booking.service.name }}{% else %}—{% endif %}</td>
+                                    <td>{{ booking.date }}{% if booking.time %}, {{ booking.time }}{% endif %}</td>
+                                    <td><span class="status-badge status-confirmed">{{ booking.status }}</span></td>
+                                </tr>
+                            {% empty %}
+                            <tr><td colspan="7" style="text-align:center;color:#888">No completed bookings found.</td></tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -462,6 +477,7 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Client Name</th>
+                                <th>Address</th>
                                 <th>Email</th>
                                 <th>Contact</th>
                                 <th>Service</th>
@@ -473,51 +489,31 @@
                             </tr>
                         </thead>
                         <tbody id="bookings-body">
-                            <tr>
-                                <td>B-1001</td>
-                                <td>Jane Doe</td>
-                                <td>jane.doe@example.com</td>
-                                <td>0917-555-0101</td>
-                                <td>Hot Stone Therapy</td>
-                                <td>Elara Mae</td>
-                                <td>Oct 26, 12:00 PM</td>
-                                <td>₱2,100</td>
+                            {% for booking in bookings %}
+                            <tr data-booking-id="{{ booking.id }}" data-display-index="{{ forloop.counter }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ booking.customer_name }}</td>
+                                <td>{% if booking.customer_address %}{{ booking.customer_address }}{% else %}&mdash;{% endif %}</td>
+                                <td>{{ booking.customer_email }}</td>
+                                <td>{{ booking.customer_phone }}</td>
+                                <td>{{ booking.service.name }}</td>
+                                <td>{% if booking.therapist %}{{ booking.therapist }}{% else %}&mdash;{% endif %}</td>
+                                <td>{% if booking.date %}{{ booking.date }}{% endif %}{% if booking.time %} {{ booking.time }}{% endif %}</td>
+                                <td>₱{{ booking.price }}</td>
                                 <td class="status-cell">
-                                    <span class="status-badge status-confirmed status-edit">Accept</span>
+                                    <span class="status-badge {% if booking.status == 'Accepted' %}status-confirmed{% elif booking.status == 'Pending' %}status-pending{% else %}status-cancelled{% endif %} status-edit">{{ booking.status }}</span>
                                     <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
                                 </td>
-                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
-                            </tr>
-                            <tr>
-                                <td>B-1004</td>
-                                <td>Maria Dela Cruz</td>
-                                <td>maria.delacruz@example.com</td>
-                                <td>0917-555-0103</td>
-                                <td>Foot Spa (45)</td>
-                                <td>Chloe Anne</td>
-                                <td>Oct 27, 04:00 PM</td>
-                                <td>₱950</td>
-                                <td class="status-cell">
-                                    <span class="status-badge status-pending status-edit">Pending</span>
-                                    <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
+                                <td>
+                                    <form class="booking-delete-form" method="post" action="{% url 'massage_app:delete-booking' booking.id %}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button>
+                                    </form>
                                 </td>
-                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
                             </tr>
-                            <tr>
-                                <td>B-1005</td>
-                                <td>Kris Aquino</td>
-                                <td>kris.aquino@example.com</td>
-                                <td>0917-555-0104</td>
-                                <td>Swedish (90)</td>
-                                <td>Marcus Jay</td>
-                                <td>Oct 25, 09:00 AM</td>
-                                <td>₱1,700</td>
-                                <td class="status-cell">
-                                    <span class="status-badge status-cancelled status-edit">Cancelled</span>
-                                    <i class="fas fa-chevron-down status-toggle" title="Change status"></i>
-                                </td>
-                                <td><button class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button></td>
-                            </tr>
+                            {% empty %}
+                            <tr><td colspan="10" style="text-align:center;color:#888">No bookings found.</td></tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -533,30 +529,32 @@
                 <div id="service-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:3000;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
                     <div style="background:#fff;border-radius:8px;max-width:680px;width:92%;margin:0 auto;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,0.2);">
                         <h3 style="margin-top:0;">Add New Service</h3>
-                        <form id="service-form">
+                        <form id="service-form" action="{% url 'massage_app:add-service' %}" method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <input type="hidden" name="service_id" id="svc-service-id" value="" />
                             <div style="display:flex;gap:12px;flex-wrap:wrap;">
                                 <div style="flex:1 1 220px;">
                                     <label style="display:block;font-weight:600;margin-bottom:6px;">Service Name</label>
-                                    <input id="svc-name" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" required />
+                                    <input id="svc-name" name="name" type="text" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" required />
                                 </div>
                                 <div style="flex:0 0 140px;">
                                     <label style="display:block;font-weight:600;margin-bottom:6px;">Duration</label>
-                                    <input id="svc-duration" type="text" placeholder="e.g. 60 min" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                    <input id="svc-duration" name="duration" type="text" placeholder="e.g. 60 min" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
                                 </div>
                                 <div style="flex:0 0 140px;">
                                     <label style="display:block;font-weight:600;margin-bottom:6px;">Price</label>
-                                    <input id="svc-price" type="text" placeholder="₱" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
+                                    <input id="svc-price" name="price" type="text" placeholder="₱" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;" />
                                 </div>
                                 <!-- Category removed -->
                             </div>
                             <div style="margin-top:12px;">
                                 <label style="display:block;font-weight:600;margin-bottom:6px;">Description</label>
-                                <textarea id="svc-desc" rows="3" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></textarea>
+                                <textarea id="svc-desc" name="description" rows="3" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;"></textarea>
                             </div>
                             <div style="margin-top:12px;display:flex;gap:12px;align-items:center;">
                                 <div>
                                     <label style="display:block;font-weight:600;margin-bottom:6px;">Image</label>
-                                    <input id="svc-image" type="file" accept="image/*" />
+                                    <input id="svc-image" name="image" type="file" accept="image/*" />
                                 </div>
                                 <div id="svc-image-preview" style="display:none;">
                                     <img src="" alt="preview" style="max-height:80px;border-radius:6px;" />
@@ -582,61 +580,27 @@
                             </tr>
                         </thead>
                         <tbody id="services-table-body">
-                            <tr>
-                                <td>Swedish Massage</td>
-                                <td></td>
-                                <td>60 min</td>
-                                <td>₱1,200</td>
-                                <td></td>
+                            {% for service in services %}
+                            <tr data-service-id="{{ service.id }}">
+                                <td>{{ service.name }}</td>
+                                <td>{{ service.description }}</td>
+                                <td>{{ service.duration }}</td>
+                                <td>₱{{ service.price }}</td>
+                                <td>
+                                    {% if service.image %}
+                                        <img src="{{ service.image.url }}" style="max-height:40px;border-radius:6px;" />
+                                    {% endif %}
+                                </td>
                                 <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
                             </tr>
-                            <tr>
-                                <td>Hot Stone Therapy</td>
-                                <td></td>
-                                <td>90 min</td>
-                                <td>₱2,100</td>
-                                <td></td>
-                                <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
-                            </tr>
-                            <tr>
-                                <td>Foot Spa & Reflexology</td>
-                                <td></td>
-                                <td>45 min</td>
-                                <td>₱950</td>
-                                <td></td>
-                                <td><i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i></td>
-                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" style="text-align:center;color:#888">No services found.</td></tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
 
-                <h3 class="section-title-admin" style="margin-top: 40px;">Therapist Scheduling</h3>
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Therapist Name</th>
-                                <th>Specialty</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="employee-table-body">
-                            <tr>
-                                <td>Elara Mae</td>
-                                <td>Hot Stone, Swedish</td>
-                                <td>Active</td>
-                                <td><i class="fas fa-calendar-alt" title="View Schedule"></i> Schedule</td>
-                            </tr>
-                            <tr>
-                                <td>Marcus Jay</td>
-                                <td>Deep Tissue, Sports</td>
-                                <td>Active</td>
-                                <td><i class="fas fa-calendar-alt" title="View Schedule"></i> Schedule</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                <!-- Therapist Scheduling section removed by request -->
             </section>
             
             <section id="employee" class="content-section">
@@ -647,7 +611,9 @@
                 <div id="employee-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;z-index:3000;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);">
                     <div style="background:#fff;border-radius:8px;max-width:680px;width:92%;margin:0 auto;padding:20px;box-shadow:0 8px 30px rgba(0,0,0,0.2);">
                         <h3 style="margin-top:0;">Add New Employee</h3>
-                        <form id="employee-form">
+                        <form id="employee-form" method="post" action="{% url 'massage_app:add-employee' %}">
+                            {% csrf_token %}
+                            <input type="hidden" id="emp-id" name="emp_id" value="" />
                             <div style="display:flex;gap:12px;flex-wrap:wrap;">
                                 <div style="flex:1 1 240px;">
                                     <label style="display:block;font-weight:600;margin-bottom:6px;">Full Name</label>
@@ -668,7 +634,6 @@
                                     <select id="emp-status" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:6px;">
                                         <option value="Active">Active</option>
                                         <option value="On Leave">On Leave</option>
-                                        <option value="Inactive">Inactive</option>
                                     </select>
                                 </div>
                             </div>
@@ -692,114 +657,52 @@
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>E-001</td>
-                                <td>Elara Mae</td>
-                                <td>Lead Therapist</td>
-                                <td>Hot Stone, Swedish</td>
-                                <td><span class="status-badge status-confirmed">Active</span></td>
-                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
+                        <tbody id="employee-table-body">
+                            {% for emp in employees %}
+                            <tr data-employee-id="{{ emp.id }}">
+                                <td>E-{{ forloop.counter }}</td>
+                                <td>{{ emp.name }}</td>
+                                <td>{{ emp.title }}</td>
+                                <td>{{ emp.bio }}</td>
+                                <td><span class="status-badge {% if emp.status == 'Active' %}status-confirmed{% elif emp.status == 'On Leave' %}status-pending{% else %}status-cancelled{% endif %}">{{ emp.status }}</span></td>
+                                <td>
+                                    <i class="fas fa-user-edit emp-edit" data-emp-id="{{ emp.id }}" title="Edit" style="margin-right:8px;"></i>
+                                    <form class="emp-delete-form" method="post" action="{% url 'massage_app:delete-employee' emp.id %}" data-emp-name="{{ emp.name }}" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" title="Remove" style="background:none;border:none;padding:0;cursor:pointer;color:var(--color-accent);">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                            <tr>
-                                <td>E-002</td>
-                                <td>Marcus Jay</td>
-                                <td>Senior Therapist</td>
-                                <td>Deep Tissue, Sports</td>
-                                <td><span class="status-badge status-confirmed">Active</span></td>
-                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
-                            </tr>
-                            <tr>
-                                <td>E-003</td>
-                                <td>Chloe Anne</td>
-                                <td>Aromatherapy Specialist</td>
-                                <td>Aromatherapy</td>
-                                <td><span class="status-badge status-pending">On Leave</span></td>
-                                <td><i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section id="reports" class="content-section">
-                <h2 class="section-title-admin">Performance Reports</h2>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                    <div>
-                        <h3>Monthly Revenue Trend</h3>
-                        <div class="chart-placeholder">Chart: Revenue vs. Month (Placeholder)</div>
-                    </div>
-                    <div>
-                        <h3>Top Services by Volume</h3>
-                        <div class="chart-placeholder">Chart: Service Popularity (Pie Chart Placeholder)</div>
-                    </div>
-                </div>
-
-                <h3 class="section-title-admin" style="margin-top: 40px;">Booking Activity Summary</h3>
-                <div class="data-table-container">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th>Value (Last 30 Days)</th>
-                                <th>Change from Prev.</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Bookings</td>
-                                <td>520</td>
-                                <td><span style="color: green;"><i class="fas fa-arrow-up"></i> +15%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Cancellation Rate</td>
-                                <td>8%</td>
-                                <td><span style="color: red;"><i class="fas fa-arrow-down"></i> -2%</span></td>
-                            </tr>
-                            <tr>
-                                <td>Average Booking Value</td>
-                                <td>₱1,450</td>
-                                <td><span style="color: green;"><i class="fas fa-arrow-up"></i> +5%</span></td>
-                            </tr>
+                            {% empty %}
+                            <tr><td colspan="6" style="text-align:center;color:#888">No employees found.</td></tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </section>
             
-            <section id="settings" class="content-section">
-                <h2 class="section-title-admin">System Configuration</h2>
-                <div class="data-table-container" style="padding: 30px;">
-                    <form>
-                        <h3>General Settings</h3>
-                        <div style="margin-bottom: 20px;">
-                            <label>Spa Name</label>
-                            <input type="text" value="Satori Spa">
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <label>Default Operating Hours</label>
-                            <input type="text" value="10:00 AM - 9:00 PM">
-                        </div>
-                        
-                        <h3 style="margin-top: 30px;">Booking Rules</h3>
-                        <div style="margin-bottom: 20px;">
-                            <label style="display: inline; margin-right: 15px;">Require Payment Deposit:</label>
-                            <input type="checkbox" checked> <span style="font-weight: 600;">Yes (10% Required)</span>
-                        </div>
-                        <div style="margin-bottom: 20px;">
-                            <label>Booking Lead Time (hours)</label>
-                            <input type="number" value="3">
-                        </div>
-
-                        <button class="btn-add" style="background-color: var(--color-primary); margin-top: 20px; padding: 10px 20px;">Save Settings</button>
-                    </form>
-                </div>
-            </section>
+                <!-- Settings link removed -->
 
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Check if Font Awesome loaded properly
+            setTimeout(() => {
+                const iconTest = document.querySelector('.fa-user, .fa-bell, .fa-bars');
+                if (iconTest) {
+                    const computed = window.getComputedStyle(iconTest, ':before');
+                    const content = computed.getPropertyValue('content');
+                    // If Font Awesome loaded, content should not be 'none' or empty
+                    if (!content || content === 'none' || content === '""') {
+                        console.warn('Font Awesome icons may not be loading. Try clearing cache (Ctrl+Shift+R)');
+                    }
+                }
+            }, 1000);
+
             // Select all links that have the data-target attribute
             const navLinks = document.querySelectorAll('#admin-nav a[data-target]');
             const contentSections = document.querySelectorAll('.content-section');
@@ -860,51 +763,92 @@
 
                 empAddBtn.addEventListener('click', (e) => {
                     e.preventDefault();
+                    const empIdField = document.getElementById('emp-id');
+                    const empId = empIdField ? empIdField.value : '';
                     const name = document.getElementById('emp-name').value.trim();
                     const role = document.getElementById('emp-role').value.trim();
                     const specialty = document.getElementById('emp-specialty').value.trim();
                     const status = document.getElementById('emp-status').value;
                     if (!name) { alert('Please enter the employee full name.'); return; }
 
-                    // generate Employee ID based on existing rows (start at 1)
-                    const rows = Array.from(employeesTbody.querySelectorAll('tr'));
-                    let maxId = 0;
-                    rows.forEach(r => {
-                        const firstTd = r.querySelector('td');
-                        if (!firstTd) return;
-                        const txt = firstTd.textContent.trim();
-                        const m = txt.match(/E-(\d+)/);
-                        if (m) {
-                            const n = parseInt(m[1], 10);
-                            if (!Number.isNaN(n) && n > maxId) maxId = n;
-                        }
-                    });
-                    const idNum = maxId + 1; // will be 1 if no existing IDs
-                    const empId = `E-${String(idNum).padStart(3, '0')}`;
+                    // Submit to backend via fetch - choose add or edit based on empId
+                    const csrftoken = (function(){ const m = document.cookie.match('(^|;)\\s*csrftoken\\s*=\\s*([^;]+)'); return m ? m.pop() : null; })();
+                    const formData = new FormData();
+                    formData.append('name', name);
+                    formData.append('title', role);
+                    formData.append('bio', specialty);
+                    formData.append('status', status);
 
-                    function appendEmployeeRow() {
-                        const tr = document.createElement('tr');
-                        const idTd = document.createElement('td'); idTd.textContent = empId;
-                        const nameTd = document.createElement('td'); nameTd.textContent = name;
-                        const roleTd = document.createElement('td'); roleTd.textContent = role;
-                        const specTd = document.createElement('td'); specTd.textContent = specialty;
-                        const statusTd = document.createElement('td'); statusTd.innerHTML = `<span class="status-badge ${status === 'Active' ? 'status-confirmed' : (status === 'On Leave' ? 'status-pending' : 'status-cancelled')}">${escapeHtml(status)}</span>`;
-                        const actionsTd = document.createElement('td'); actionsTd.innerHTML = '<i class="fas fa-user-edit" title="Edit"></i> <i class="fas fa-trash-alt" title="Remove"></i>';
-
-                        tr.appendChild(idTd);
-                        tr.appendChild(nameTd);
-                        tr.appendChild(roleTd);
-                        tr.appendChild(specTd);
-                        tr.appendChild(statusTd);
-                        tr.appendChild(actionsTd);
-
-                        employeesTbody.appendChild(tr);
-                        employeeModal.style.display = 'none';
-                        employeeForm.reset();
+                    let url = employeeForm.getAttribute('action');
+                    let method = 'POST';
+                    if (empId) {
+                        url = `/admin-dashboard/employee/${empId}/edit/`;
                     }
 
-                    // Actually append the new employee row
-                    appendEmployeeRow();
+                    fetch(url, {
+                        method: method,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrftoken || ''
+                        },
+                        body: formData,
+                        credentials: 'same-origin'
+                    }).then(r => r.json()).then(data => {
+                        if (data && data.success) {
+                            if (empId) {
+                                // Update existing row in table
+                                const row = document.querySelector(`tr[data-employee-id="${empId}"]`);
+                                if (row) {
+                                    row.children[1].textContent = data.name;
+                                    row.children[2].textContent = data.title || role;
+                                    row.children[3].textContent = data.bio || specialty;
+                                    const badge = row.children[4].querySelector('.status-badge');
+                                    if (badge) {
+                                        badge.textContent = data.status || status;
+                                        badge.classList.remove('status-confirmed','status-pending','status-cancelled');
+                                        if ((data.status || status) === 'Active') badge.classList.add('status-confirmed');
+                                        else if ((data.status || status) === 'On Leave') badge.classList.add('status-pending');
+                                        else badge.classList.add('status-cancelled');
+                                    }
+                                }
+                            } else {
+                                // Append new row with server-provided id
+                                const idVal = data.id || 0;
+                                const tr = document.createElement('tr');
+                                tr.dataset.employeeId = idVal;
+                                const idTd = document.createElement('td'); idTd.textContent = `E-${String((idVal)).padStart(3,'0')}`;
+                                const nameTd = document.createElement('td'); nameTd.textContent = data.name;
+                                const roleTd = document.createElement('td'); roleTd.textContent = data.title || role;
+                                const specTd = document.createElement('td'); specTd.textContent = specialty;
+                                const statusTd = document.createElement('td'); statusTd.innerHTML = `<span class="status-badge ${status === 'Active' ? 'status-confirmed' : 'status-pending'}">${escapeHtml(status)}</span>`;
+                                const actionsTd = document.createElement('td');
+                                // Create edit icon
+                                const editHtml = `<i class="fas fa-user-edit emp-edit" data-emp-id="${idVal}" title="Edit" style="margin-right:8px;"></i>`;
+                                // Build a server-style delete form so delete works immediately (contains CSRF token)
+                                const csrftok = getCsrfToken();
+                                const safeName = escapeHtml(data.name || '');
+                                const deleteFormHtml = `
+                                    <form class="emp-delete-form" method="post" action="/admin-dashboard/employee/${idVal}/delete/" data-emp-name="${safeName}" style="display:inline;">
+                                        <input type="hidden" name="csrfmiddlewaretoken" value="${csrftok}">
+                                        <button type="submit" title="Remove" style="background:none;border:none;padding:0;cursor:pointer;color:var(--color-accent);">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>`;
+                                actionsTd.innerHTML = editHtml + deleteFormHtml;
+                                tr.appendChild(idTd); tr.appendChild(nameTd); tr.appendChild(roleTd); tr.appendChild(specTd); tr.appendChild(statusTd); tr.appendChild(actionsTd);
+                                employeesTbody.appendChild(tr);
+                            }
+                            // reset modal
+                            employeeModal.style.display = 'none';
+                            employeeForm.reset();
+                            if (empIdField) empIdField.value = '';
+                        } else {
+                            alert('Could not save employee.');
+                        }
+                    }).catch(err => {
+                        console.error('Add/Edit employee error', err);
+                        alert('Error saving employee.');
+                    });
                 });
             }
 
@@ -919,6 +863,53 @@
                 });
             });
 
+            // Intercept server-rendered employee delete forms (and any future forms with this class)
+            document.addEventListener('submit', function(evt) {
+                const form = evt.target;
+                if (!form || !form.classList || (!form.classList.contains('emp-delete-form') && !form.classList.contains('booking-delete-form'))) return;
+                // prevent default until user confirms
+                evt.preventDefault();
+                    const isBooking = form.classList.contains('booking-delete-form');
+                const label = isBooking ? 'booking' : 'employee';
+                const formTr = form.closest('tr');
+                const nameOrId = isBooking ? (formTr ? (formTr.dataset.displayIndex || formTr.dataset.bookingId || '') : '') : (form.getAttribute('data-emp-name') || '');
+                const ok = confirm(`Delete ${label} ${nameOrId || nameOrId || ''}?`);
+                if (!ok) return;
+
+                // Try AJAX delete first
+                const url = form.getAttribute('action');
+                const csrftoken = getCsrfToken();
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken || '',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin'
+                }).then(async (resp) => {
+                    let text = '';
+                    try { text = await resp.text(); } catch(e) { text = ''; }
+                    let data = null;
+                    try { data = text ? JSON.parse(text) : null; } catch(e) { data = null; }
+                    if (resp.ok) {
+                        if (!data) data = {success: true};
+                        if (data && data.success) {
+                            // remove the containing table row
+                            const row = form.closest('tr');
+                            if (row) row.remove();
+                            return;
+                        }
+                        alert(data && data.error ? data.error : `Could not delete ${label}.`);
+                    } else {
+                        alert('Delete failed: ' + resp.status + '\n' + (data && data.error ? data.error : text));
+                    }
+                }).catch(err => {
+                    console.error(label + ' delete (form) error:', err);
+                    // fallback: submit the form normally so server handles CSRF and redirect
+                    try { form.submit(); } catch (ex) { console.error('Fallback form submit failed', ex); alert('Could not delete ' + label + '.'); }
+                });
+            });
             // Initialize: show the overview section on page load
             updateView('overview');
 
@@ -940,6 +931,18 @@
                 return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
             }
 
+            // CSRF helpers (defined once)
+            function getCookie(name) {
+                const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                return v ? v.pop() : null;
+            }
+            function getCsrfToken() {
+                const cookieToken = getCookie('csrftoken');
+                if (cookieToken) return cookieToken;
+                const csrffield = document.querySelector('#svc-delete-form input[name="csrfmiddlewaretoken"]');
+                return csrffield ? csrffield.value : '';
+            }
+
             if (addServiceBtn && serviceModal && serviceForm && servicesTbody) {
                 addServiceBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -950,6 +953,7 @@
                     serviceModal.style.display = 'none';
                     serviceForm.reset();
                     if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    const sid = document.getElementById('svc-service-id'); if (sid) sid.value = '';
                 });
 
                 // Close modal when clicking backdrop
@@ -958,6 +962,7 @@
                         serviceModal.style.display = 'none';
                         serviceForm.reset();
                         if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                        const sid = document.getElementById('svc-service-id'); if (sid) sid.value = '';
                     }
                 });
 
@@ -977,95 +982,97 @@
                     reader.readAsDataURL(file);
                 });
 
+                // Handle form submission: if editing (svc-service-id present) send AJAX to edit endpoint
                 serviceForm.addEventListener('submit', (e) => {
-                    e.preventDefault();
                     const name = document.getElementById('svc-name').value.trim();
-                    const duration = document.getElementById('svc-duration').value.trim();
-                    const price = document.getElementById('svc-price').value.trim();
-                    const desc = document.getElementById('svc-desc').value.trim();
+                    if (!name) { e.preventDefault(); alert('Please enter a service name.'); return; }
 
-                    if (!name) { alert('Please enter a service name.'); return; }
+                    const sidField = document.getElementById('svc-service-id');
+                    const sid = sidField ? sidField.value : '';
+                    if (!sid) {
+                        // create new service via normal POST (form action)
+                        // Ensure the form has a populated csrfmiddlewaretoken input (use cookie fallback)
+                        try {
+                            const csrftok = getCsrfToken();
+                            let csrfInput = serviceForm.querySelector('input[name="csrfmiddlewaretoken"]');
+                            if (!csrfInput) {
+                                csrfInput = document.createElement('input');
+                                csrfInput.type = 'hidden';
+                                csrfInput.name = 'csrfmiddlewaretoken';
+                                serviceForm.appendChild(csrfInput);
+                            }
+                            if (csrftok) csrfInput.value = csrftok;
+                        } catch (e) { /* noop */ }
+                        return;
+                    }
 
-                    function appendRow(imgSrc) {
-                        const tr = document.createElement('tr');
-                        // Name cell
-                        const nameTd = document.createElement('td');
-                        nameTd.textContent = name;
+                    // Edit flow: submit via AJAX to edit-service endpoint
+                    e.preventDefault();
+                    const url = `/admin-dashboard/service/${sid}/edit/`;
+                    const formData = new FormData(serviceForm);
 
-                        // Description cell (new column)
-                        const descTd = document.createElement('td');
-                        descTd.textContent = desc || '';
-
-                        const durTd = document.createElement('td'); durTd.textContent = duration;
-                        const priceTd = document.createElement('td'); priceTd.textContent = price;
-
-                        // Image cell
-                        const imgTd = document.createElement('td');
-                        if (imgSrc) {
-                            const img = document.createElement('img');
-                            img.src = imgSrc;
-                            img.alt = '';
-                            img.style.maxHeight = '40px';
-                            img.style.borderRadius = '6px';
-                            img.style.verticalAlign = 'middle';
-                            imgTd.appendChild(img);
+                    // include image file if present (already in formData)
+                    const csrftoken = getCsrfToken();
+                    console.log('svc edit: csrf token =>', csrftoken);
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': csrftoken || ''
+                        },
+                        body: formData,
+                        credentials: 'same-origin'
+                    }).then(resp => {
+                        if (!resp.ok) {
+                            return resp.text().then(text => {
+                                console.error('Service edit non-OK response:', resp.status, text);
+                                throw new Error('Server returned ' + resp.status);
+                            });
                         }
-
-                        const actionsTd = document.createElement('td'); actionsTd.innerHTML = '<i class="fas fa-edit svc-edit" title="Edit"></i> <i class="fas fa-trash-alt svc-delete" title="Delete"></i>';
-
-                        tr.appendChild(nameTd);
-                        tr.appendChild(descTd);
-                        tr.appendChild(durTd);
-                        tr.appendChild(priceTd);
-                        tr.appendChild(imgTd);
-                        tr.appendChild(actionsTd);
-
-                        servicesTbody.appendChild(tr);
-                        serviceModal.style.display = 'none';
-                        serviceForm.reset();
-                        svcEditingRow = null;
-                        if (svcModalTitle) svcModalTitle.textContent = 'Add New Service';
-                        if (svcSubmitBtn) svcSubmitBtn.textContent = 'Add Service';
-                        if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
-                    }
-
-                    function updateRow(row, imgSrc) {
-                        const tds = row.children;
-                        tds[0].textContent = name;
-                        tds[1].textContent = desc || '';
-                        tds[2].textContent = duration;
-                        tds[3].textContent = price;
-                        const imgTd = tds[4];
-                        imgTd.innerHTML = '';
-                        if (imgSrc) {
-                            const img = document.createElement('img');
-                            img.src = imgSrc;
-                            img.alt = '';
-                            img.style.maxHeight = '40px';
-                            img.style.borderRadius = '6px';
-                            img.style.verticalAlign = 'middle';
-                            imgTd.appendChild(img);
+                        const ct = resp.headers.get('content-type') || '';
+                        if (ct.indexOf('application/json') === -1) {
+                            return resp.text().then(text => {
+                                console.error('Service edit unexpected content-type', ct, text);
+                                throw new Error('Expected JSON response');
+                            });
                         }
-                        serviceModal.style.display = 'none';
-                        serviceForm.reset();
-                        svcEditingRow = null;
-                        if (svcModalTitle) svcModalTitle.textContent = 'Add New Service';
-                        if (svcSubmitBtn) svcSubmitBtn.textContent = 'Add Service';
-                        if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
-                    }
-
-                    const file = svcImageInput.files[0];
-                    if (file) {
-                        const reader = new FileReader();
-                        reader.onload = (ev) => {
-                            if (svcEditingRow) updateRow(svcEditingRow, ev.target.result);
-                            else appendRow(ev.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    } else {
-                        if (svcEditingRow) updateRow(svcEditingRow, null);
-                        else appendRow(null);
-                    }
+                        return resp.json();
+                    }).then(data => {
+                        if (data && data.success) {
+                            // update the table row in-place
+                            const row = svcEditingRow;
+                            if (row) {
+                                // update table cells: name, desc, duration, price, image
+                                row.children[0].textContent = document.getElementById('svc-name').value.trim();
+                                row.children[1].textContent = document.getElementById('svc-desc').value.trim();
+                                row.children[2].textContent = document.getElementById('svc-duration').value.trim();
+                                row.children[3].textContent = document.getElementById('svc-price').value.trim();
+                                const imgTd = row.children[4];
+                                // if preview image present, update it
+                                if (svcImagePreviewImg && svcImagePreviewImg.src) {
+                                    imgTd.innerHTML = '';
+                                    const img = document.createElement('img');
+                                    img.src = svcImagePreviewImg.src;
+                                    img.style.maxHeight = '40px';
+                                    img.style.borderRadius = '6px';
+                                    imgTd.appendChild(img);
+                                }
+                            }
+                            // reset modal
+                            serviceModal.style.display = 'none';
+                            serviceForm.reset();
+                            if (svcImagePreviewImg) { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                            if (sidField) sidField.value = '';
+                            svcEditingRow = null;
+                            if (svcModalTitle) svcModalTitle.textContent = 'Add New Service';
+                            if (svcSubmitBtn) svcSubmitBtn.textContent = 'Add Service';
+                        } else {
+                            alert('Could not save changes.');
+                        }
+                    }).catch(err => {
+                        console.error('Service edit error:', err);
+                        alert('Error saving service.');
+                    });
                 });
             }
 
@@ -1087,13 +1094,25 @@
                 bookingsSearch.addEventListener('input', (e) => filterBookings(e.target.value));
             }
 
-            // Status editor: floating menu to change status
+            // Status editor: floating menu to change status based on current status
             let statusMenu = null;
-            const statusOptions = [
-                { name: 'Accept', cls: 'status-confirmed' },
-                { name: 'Cancelled', cls: 'status-cancelled' },
-                { name: 'Completed', cls: 'status-confirmed' }
-            ];
+            
+            function getStatusOptions(currentStatus) {
+                // Return available status transitions based on current status
+                if (currentStatus === 'Pending') {
+                    return [
+                        { name: 'Accept', value: 'Accepted', cls: 'status-confirmed' },
+                        { name: 'Cancel', value: 'Cancelled', cls: 'status-cancelled' }
+                    ];
+                } else if (currentStatus === 'Accepted') {
+                    return [
+                        { name: 'Completed', value: 'Completed', cls: 'status-confirmed' }
+                    ];
+                } else {
+                    // Cancelled or Completed - no further actions
+                    return [];
+                }
+            }
 
             function closeStatusMenu() {
                 if (statusMenu && statusMenu.parentNode) statusMenu.parentNode.removeChild(statusMenu);
@@ -1102,27 +1121,129 @@
 
             function showStatusMenu(targetSpan) {
                 closeStatusMenu();
+                
+                // Get current status from the span's text
+                const currentStatus = targetSpan.textContent.trim();
+                const statusOptions = getStatusOptions(currentStatus);
+                
+                // If no options available, don't show menu
+                if (statusOptions.length === 0) {
+                    return;
+                }
+                
                 statusMenu = document.createElement('div');
                 statusMenu.className = 'status-menu';
                 statusOptions.forEach(opt => {
                     const btn = document.createElement('button');
                     btn.textContent = opt.name;
-                    btn.addEventListener('click', () => {
-                        // update text and class
-                        targetSpan.textContent = opt.name;
-                        targetSpan.classList.remove('status-confirmed','status-pending','status-cancelled');
-                        if (opt.cls) targetSpan.classList.add(opt.cls);
-                        closeStatusMenu();
+                    btn.addEventListener('click', async () => {
+                        // Find booking id from the nearest row
+                        const row = targetSpan.closest('tr');
+                        const bookingId = row && row.dataset ? row.dataset.bookingId : null;
+                        const displayIndex = row && row.dataset ? row.dataset.displayIndex : null;
+                        const displayId = displayIndex ? displayIndex : (bookingId ? bookingId : '');
+                        // Confirm action
+                        const ok = confirm(`Are you sure you want to ${opt.name.toLowerCase()} booking ${displayId || ''}?`);
+                        if (!ok) return;
+                        // Send AJAX POST to update booking status
+                        try {
+                            const csrftoken = (function(){
+                                const v = document.cookie.match('(^|;)\\s*' + 'csrftoken' + '\\s*=\\s*([^;]+)');
+                                return v ? v.pop() : '';
+                            })();
+                            const url = `/update-booking-status/${bookingId}/`;
+                            const resp = await fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': csrftoken || '',
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                },
+                                credentials: 'same-origin',
+                                body: JSON.stringify({ status: opt.value })
+                            });
+                            if (!resp.ok) {
+                                const errorData = await resp.json().catch(() => ({}));
+                                throw new Error(errorData.error || 'Status update failed');
+                            }
+                            const data = await resp.json().catch(() => ({}));
+                            if (data && data.success) {
+                                // Success: update the row status in-place so admin UI reflects change immediately
+                                try {
+                                    // Find the table row for this booking
+                                    const row = document.querySelector(`tr[data-booking-id="${bookingId}"]`);
+                                    if (row) {
+                                        const statusCell = row.querySelector('.status-cell');
+                                        if (statusCell) {
+                                            const span = statusCell.querySelector('.status-badge');
+                                            if (span) {
+                                                span.textContent = opt.value;
+                                                // normalize classes
+                                                span.classList.remove('status-pending', 'status-confirmed', 'status-cancelled');
+                                                if (opt.value === 'Accepted' || opt.value === 'Completed') {
+                                                    span.classList.add('status-confirmed');
+                                                } else if (opt.value === 'Pending') {
+                                                    span.classList.add('status-pending');
+                                                } else {
+                                                    span.classList.add('status-cancelled');
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (domErr) {
+                                    console.warn('Could not update DOM after status change', domErr);
+                                }
+                                // Close the status menu and show a small success hint
+                                closeStatusMenu();
+                                try {
+                                    const hint = document.createElement('div');
+                                    hint.textContent = `Booking ${displayId} updated to ${opt.name}`;
+                                    hint.style.position = 'fixed';
+                                    hint.style.right = '18px';
+                                    hint.style.top = '18px';
+                                    hint.style.background = 'rgba(44,95,93,0.95)';
+                                    hint.style.color = '#fff';
+                                    hint.style.padding = '8px 12px';
+                                    hint.style.borderRadius = '6px';
+                                    hint.style.zIndex = 9999;
+                                    document.body.appendChild(hint);
+                                    setTimeout(() => hint.remove(), 2500);
+                                } catch (hintErr) {}
+                            } else {
+                                const errorMsg = (data && data.error) ? data.error : 'Could not update status.';
+                                console.error('Status update failed:', errorMsg);
+                                alert(errorMsg);
+                            }
+                        } catch (err) {
+                            // Only show alert if we're still on the page (not navigating away)
+                            if (document.visibilityState === 'visible') {
+                                console.error('Status update error:', err);
+                                alert('Error updating booking status: ' + (err.message || 'Unknown error'));
+                            }
+                        }
                     });
                     statusMenu.appendChild(btn);
                 });
-                document.body.appendChild(statusMenu);
-                // position menu near the clicked element
-                const rect = targetSpan.getBoundingClientRect();
-                const top = rect.bottom + window.scrollY + 6; // below
-                const left = Math.min(window.scrollX + rect.left, window.scrollX + document.documentElement.clientWidth - 200);
-                statusMenu.style.top = top + 'px';
-                statusMenu.style.left = left + 'px';
+                // append into the cell so absolute positioning is relative to it
+                const row = targetSpan.closest('tr');
+                const statusCell = row ? row.querySelector('.status-cell') : null;
+                if (statusCell) {
+                    statusCell.appendChild(statusMenu);
+                    // position menu below the clicked span using offset values
+                    const offsetTop = targetSpan.offsetTop + targetSpan.offsetHeight + 6;
+                    const offsetLeft = Math.min(targetSpan.offsetLeft, statusCell.clientWidth - 200);
+                    statusMenu.style.top = offsetTop + 'px';
+                    statusMenu.style.left = offsetLeft + 'px';
+                } else {
+                    // fallback to body positioning if cell is not found
+                    document.body.appendChild(statusMenu);
+                    const rect = targetSpan.getBoundingClientRect();
+                    const top = rect.bottom + window.scrollY + 6; // below
+                    const left = Math.min(window.scrollX + rect.left, window.scrollX + document.documentElement.clientWidth - 200);
+                    statusMenu.style.top = top + 'px';
+                    statusMenu.style.left = left + 'px';
+                }
             }
 
             // Delegate clicks for delete buttons and status badges
@@ -1132,11 +1253,49 @@
                 // 1) Delete action (button may contain an <i>)
                 const del = e.target.closest && e.target.closest('.action-delete');
                 if (del) {
+                    // If the delete button is inside a server-rendered booking delete form,
+                    // let the form's submit handler handle confirmation and AJAX/fallback.
+                    const parentForm = del.closest('form');
+                    if (parentForm && parentForm.classList && parentForm.classList.contains('booking-delete-form')) {
+                        // allow the normal submit event to fire (will be handled elsewhere)
+                        return;
+                    }
+
                     e.stopPropagation();
                     const row = del.closest('tr');
-                    const bookingId = row ? (row.querySelector('td') ? row.querySelector('td').textContent.trim() : '') : '';
-                    const ok = confirm(`Delete booking ${bookingId || ''}?`);
-                    if (ok && row) row.remove();
+                    if (!row) return;
+                    const bookingId = row.dataset ? row.dataset.bookingId : null;
+                    const displayIndex = row.dataset ? row.dataset.displayIndex : null;
+                    const displayId = displayIndex ? displayIndex : (bookingId ? bookingId : (row.querySelector('td') ? row.querySelector('td').textContent.trim() : ''));
+                    const ok = confirm(`Delete booking ${displayId || ''}?`);
+                    if (!ok) return;
+                    if (bookingId) {
+                        const csrftoken = getCsrfToken();
+                        const url = `/admin-dashboard/booking/${bookingId}/delete/`;
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken || '',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        }).then(resp => {
+                            if (resp.ok) return resp.json().catch(() => ({success: true}));
+                            throw new Error('Delete failed');
+                        }).then(data => {
+                            if (data && data.success) {
+                                if (row) row.remove();
+                            } else {
+                                alert('Could not delete booking.');
+                            }
+                        }).catch(err => {
+                            console.error('Booking delete error:', err);
+                            alert('Error deleting booking.');
+                        });
+                    } else {
+                        if (row) row.remove();
+                    }
                     return;
                 }
 
@@ -1147,7 +1306,56 @@
                     const row = svcDel.closest('tr');
                     const svcName = row ? (row.querySelector('td') ? row.querySelector('td').textContent.trim() : '') : '';
                     const ok = confirm(`Delete service ${svcName || ''}?`);
-                    if (ok && row) row.remove();
+                    if (!ok) return;
+                    // perform AJAX POST to delete endpoint with CSRF
+                        try {
+                        // CSRF helper reuse: prefer cookie 'csrftoken', fallback to hidden form token
+                        function getCookie(name) {
+                            const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+                            return v ? v.pop() : null;
+                        }
+                        function getCsrfToken() {
+                            const cookieToken = getCookie('csrftoken');
+                            if (cookieToken) return cookieToken;
+                            const csrffield = document.querySelector('#svc-delete-form input[name="csrfmiddlewaretoken"]');
+                            return csrffield ? csrffield.value : '';
+                        }
+                        const csrftoken = getCsrfToken();
+                        // service id from data attribute
+                        const sid = row && row.dataset ? row.dataset.serviceId : null;
+                        if (!sid) {
+                            // fallback: try to parse from first cell text (not ideal)
+                            if (row) row.remove();
+                            return;
+                        }
+                        const url = `/admin-dashboard/service/${sid}/delete/`;
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken || '',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        }).then(resp => {
+                            if (resp.ok) {
+                                return resp.json().catch(() => ({success: true}));
+                            }
+                            throw new Error('Delete failed');
+                        }).then(data => {
+                            if (data && data.success) {
+                                if (row) row.remove();
+                            } else {
+                                alert('Could not delete service.');
+                            }
+                        }).catch(err => {
+                            console.error('Service delete error:', err);
+                            alert('Error deleting service.');
+                        });
+                    } catch (ex) {
+                        console.error(ex);
+                        if (row) row.remove();
+                    }
                     return;
                 }
 
@@ -1164,10 +1372,110 @@
                     const imgEl = row.children[4].querySelector('img');
                     if (imgEl) { svcImagePreviewImg.src = imgEl.src; svcImagePreviewWrap.style.display = 'block'; }
                     else { svcImagePreviewImg.src = ''; svcImagePreviewWrap.style.display = 'none'; }
+                    // populate hidden service id for server-side update
+                    const sid = document.getElementById('svc-service-id');
+                    if (sid && row.dataset && row.dataset.serviceId) sid.value = row.dataset.serviceId;
                     svcEditingRow = row;
                     if (svcModalTitle) svcModalTitle.textContent = 'Edit Service';
                     if (svcSubmitBtn) svcSubmitBtn.textContent = 'Save Changes';
                     serviceModal.style.display = 'flex';
+                    return;
+                }
+
+                // 4) Employee edit / delete handlers
+                const empDel = e.target.closest && e.target.closest('.emp-delete');
+                if (empDel) {
+                    e.stopPropagation();
+                    const row = empDel.closest('tr');
+                    if (!row) return;
+                    const empId = empDel.dataset && empDel.dataset.empId ? empDel.dataset.empId : (row.dataset ? row.dataset.employeeId : null);
+                    const name = row && row.children[1] ? row.children[1].textContent.trim() : '';
+                    if (!confirm(`Delete employee ${name || ''}?`)) return;
+                    if (empId) {
+                        const csrftoken = getCsrfToken();
+                        const url = `/admin-dashboard/employee/${empId}/delete/`;
+                        // visual feedback: disable icon while request in-flight
+                        empDel.style.opacity = '0.5'; empDel.style.pointerEvents = 'none';
+                        console.log('Deleting employee', empId, 'url', url, 'csrf', csrftoken);
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken || '',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        }).then(async (resp) => {
+                            let text = '';
+                            try { text = await resp.text(); } catch(e) { text = ''; }
+                            let data = null;
+                            try { data = text ? JSON.parse(text) : null; } catch(e) { data = null; }
+                            if (resp.ok) {
+                                if (!data) data = {success: true};
+                                if (data && data.success) {
+                                    if (row) row.remove();
+                                    return;
+                                }
+                                // server returned non-success JSON
+                                const errMsg = data && data.error ? data.error : 'Could not delete employee.';
+                                alert(errMsg);
+                            } else {
+                                // show server response text for debugging
+                                alert('Delete failed: ' + resp.status + '\n' + (data && data.error ? data.error : text));
+                            }
+                        }).catch(err => {
+                            console.error('Employee delete error:', err);
+                            alert('Error deleting employee (AJAX). Attempting fallback form submit.');
+                            // Fallback: submit hidden POST form so server receives a proper POST with CSRF
+                            try {
+                                const fallbackForm = document.getElementById('svc-delete-form');
+                                if (fallbackForm) {
+                                    fallbackForm.setAttribute('action', url);
+                                    // ensure there is no leftover _method input
+                                    let existing = fallbackForm.querySelector('input[name="_fallback_delete"]');
+                                    if (!existing) {
+                                        existing = document.createElement('input');
+                                        existing.type = 'hidden'; existing.name = '_fallback_delete'; existing.value = '1';
+                                        fallbackForm.appendChild(existing);
+                                    }
+                                    fallbackForm.submit();
+                                    return;
+                                }
+                            } catch (ex) {
+                                console.error('Fallback submit failed', ex);
+                            }
+                        }).finally(() => {
+                            // restore icon state
+                            empDel.style.opacity = ''; empDel.style.pointerEvents = '';
+                        });
+                    } else {
+                        if (row) row.remove();
+                    }
+                    return;
+                }
+
+                const empEd = e.target.closest && e.target.closest('.emp-edit');
+                if (empEd) {
+                    e.stopPropagation();
+                    const row = empEd.closest('tr');
+                    if (!row) return;
+                    const empId = empEd.dataset && empEd.dataset.empId ? empEd.dataset.empId : (row.dataset ? row.dataset.employeeId : '');
+                    // populate modal with current values
+                    const name = row.children[1] ? row.children[1].textContent.trim() : '';
+                    const role = row.children[2] ? row.children[2].textContent.trim() : '';
+                    const bio = row.children[3] ? row.children[3].textContent.trim() : '';
+                    const statusSpan = row.children[4] ? row.children[4].querySelector('.status-badge') : null;
+                    const statusVal = statusSpan ? statusSpan.textContent.trim() : 'Active';
+
+                    document.getElementById('emp-name').value = name;
+                    document.getElementById('emp-role').value = role;
+                    document.getElementById('emp-specialty').value = bio;
+                    const sfield = document.getElementById('emp-status'); if (sfield) sfield.value = statusVal;
+                    const empIdField = document.getElementById('emp-id'); if (empIdField) empIdField.value = empId;
+                    // update modal visuals
+                    const modalTitle = document.querySelector('#employee-modal h3'); if (modalTitle) modalTitle.textContent = 'Edit Employee';
+                    const addBtn = document.getElementById('emp-add'); if (addBtn) addBtn.textContent = 'Save Changes';
+                    employeeModal.style.display = 'flex';
                     return;
                 }
 
@@ -1190,6 +1498,176 @@
                     closeStatusMenu();
                 }
             });
+
+            // Poll for new bookings and update the bell badge (no full reload).
+            (function(){
+                let bookingVer = null;
+                const notifBadge = document.getElementById('notif-badge');
+                const notifWrap = document.querySelector('.admin-profile [title="Notifications"]');
+                function updateBadge(count){
+                    try{
+                        if (!notifBadge) return;
+                        if (!count || count <= 0) { notifBadge.style.display = 'none'; }
+                        else { notifBadge.style.display = 'inline-block'; notifBadge.textContent = String(count); }
+                    }catch(e){/*noop*/}
+                }
+
+                const bookingsTodayEl = document.getElementById('bookings-today-value');
+                function fetchBookingVer(){
+                    fetch('{% url "massage_app:bookings-version" %}', {credentials: 'same-origin'})
+                    .then(r => r.json()).then(j => {
+                        if (!j) return;
+                        // initial set: show badge if there are unseen notifications
+                            if (!bookingVer) {
+                            bookingVer = j.version || null;
+                            updateBadge(j.unseen_count || 0);
+                            if (bookingsTodayEl) {
+                                if (typeof j.bookings_created_today !== 'undefined') bookingsTodayEl.textContent = String(j.bookings_created_today);
+                                else if (typeof j.bookings_today !== 'undefined') bookingsTodayEl.textContent = String(j.bookings_today);
+                            }
+                            // cache latest booking payload for immediate popup use
+                            if (j.latest) window.__lastBookingLatest = j.latest;
+                            return;
+                        }
+                        // version changed -> update badge and optionally flash
+                        if (j.version && bookingVer !== j.version) {
+                            bookingVer = j.version;
+                            updateBadge(j.unseen_count || 0);
+                            if (bookingsTodayEl) {
+                                if (typeof j.bookings_created_today !== 'undefined') bookingsTodayEl.textContent = String(j.bookings_created_today);
+                                else if (typeof j.bookings_today !== 'undefined') bookingsTodayEl.textContent = String(j.bookings_today);
+                            }
+                            if (j.latest) window.__lastBookingLatest = j.latest;
+                            // small visual cue: briefly scale the bell
+                            try{
+                                if (notifWrap) {
+                                    notifWrap.style.transform = 'scale(1.06)';
+                                    setTimeout(()=>{ if (notifWrap) notifWrap.style.transform = ''; }, 250);
+                                }
+                            }catch(e){}
+
+                            // Also insert the new booking into the Bookings table if visible
+                            try {
+                                const latest = j.latest;
+                                if (latest) {
+                                    // avoid duplicates
+                                    if (!document.querySelector(`tr[data-booking-id="${latest.id}"]`)) {
+                                        const bookingsTbody = document.getElementById('bookings-body');
+                                        if (bookingsTbody) {
+                                            // compute display index as current row count + 1
+                                            const nextIndex = bookingsTbody.querySelectorAll('tr').length + 1;
+                                            const tr = document.createElement('tr');
+                                            tr.setAttribute('data-booking-id', String(latest.id));
+                                            tr.setAttribute('data-display-index', String(nextIndex));
+                                            const serviceName = latest.service ? escapeHtml(latest.service) : '&mdash;';
+                                            const therapist = latest.therapist ? escapeHtml(latest.therapist) : '&mdash;';
+                                            const custEmail = latest.customer_email ? escapeHtml(latest.customer_email) : '';
+                                            const custPhone = latest.customer_phone ? escapeHtml(latest.customer_phone) : '';
+                                            const price = typeof latest.price !== 'undefined' ? ('₱' + Number(latest.price).toFixed(2)) : '';
+                                            const dateTime = (latest.date || '') + (latest.time ? ' ' + latest.time : '');
+                                            const statusText = latest.status || 'Pending';
+                                            const statusClass = statusText === 'Accepted' || statusText === 'Completed' ? 'status-confirmed' : (statusText === 'Pending' ? 'status-pending' : 'status-cancelled');
+                                            tr.innerHTML = `
+                                                <td>${nextIndex}</td>
+                                                <td>${escapeHtml(latest.customer_name || '')}</td>
+                                                <td>${custEmail}</td>
+                                                <td>${custPhone}</td>
+                                                <td>${serviceName}</td>
+                                                <td>${therapist}</td>
+                                                <td>${escapeHtml(dateTime)}</td>
+                                                <td>${price}</td>
+                                                <td class="status-cell"><span class="status-badge ${statusClass} status-edit">${escapeHtml(statusText)}</span> <i class="fas fa-chevron-down status-toggle" title="Change status"></i></td>
+                                                <td>
+                                                    <form class="booking-delete-form" method="post" action="/admin-dashboard/booking/${latest.id}/delete/" style="display:inline;">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="action-delete" title="Delete booking"><i class="fas fa-trash-alt"></i></button>
+                                                    </form>
+                                                </td>
+                                            `;
+                                            // insert at top so newest is visible immediately
+                                            bookingsTbody.insertBefore(tr, bookingsTbody.firstChild);
+                                        }
+                                    }
+                                }
+                            } catch (insertErr) { console.warn('Could not insert latest booking row', insertErr); }
+                        }
+                    }).catch(() => {});
+                }
+                // helper: show a small popup near the bell with latest booking info
+                function showNotifPopup(latest){
+                    try{
+                        if (!latest) return;
+                        // remove existing popup
+                        const existing = document.getElementById('notif-popup');
+                        if (existing) existing.remove();
+                        const popup = document.createElement('div');
+                        popup.id = 'notif-popup';
+                        popup.style.position = 'fixed';
+                        popup.style.zIndex = 4000;
+                        popup.style.background = '#fff';
+                        popup.style.border = '1px solid rgba(0,0,0,0.08)';
+                        popup.style.boxShadow = '0 6px 20px rgba(0,0,0,0.12)';
+                        popup.style.padding = '12px 14px';
+                        popup.style.borderRadius = '8px';
+                        popup.style.minWidth = '220px';
+                        popup.style.fontSize = '13px';
+                        popup.style.color = '#333';
+                        popup.innerHTML = `
+                            <div style="font-weight:700;margin-bottom:6px;">New Booking Received</div>
+                            <div style="margin-bottom:6px;"><strong>Customer:</strong> ${escapeHtml(latest.customer_name || '')}</div>
+                            <div style="margin-bottom:6px;"><strong>Service:</strong> ${escapeHtml(latest.service || '')}</div>
+                            <div style="margin-bottom:6px;"><strong>When:</strong> ${escapeHtml(latest.date || '')} ${escapeHtml(latest.time || '')}</div>
+                            <div style="text-align:right;margin-top:6px;"><button id="notif-popup-close" style="background:#81b29a;color:#fff;border:none;padding:6px 10px;border-radius:6px;cursor:pointer;">Close</button></div>
+                        `;
+                        document.body.appendChild(popup);
+                        // position near the bell
+                        const rect = notifWrap.getBoundingClientRect();
+                        const left = Math.min(window.innerWidth - 240, rect.left + window.scrollX - 160 + rect.width);
+                        const top = rect.bottom + window.scrollY + 8;
+                        popup.style.left = (left < 8 ? 8 : left) + 'px';
+                        popup.style.top = top + 'px';
+                        // close button
+                        const closeBtn = document.getElementById('notif-popup-close');
+                        if (closeBtn) closeBtn.addEventListener('click', () => popup.remove());
+                        // auto-dismiss after 10s
+                        setTimeout(() => { try{ if (popup && popup.parentNode) popup.parentNode.removeChild(popup); } catch(e){} }, 10000);
+                    }catch(e){ console.error('notif popup error', e); }
+                }
+
+                // click the bell: show popup with latest booking then mark seen
+                if (notifWrap) {
+                    notifWrap.style.cursor = 'pointer';
+                    notifWrap.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        // if we have latest from poll, use it; otherwise fetch now
+                        if (window.__lastBookingLatest) {
+                            showNotifPopup(window.__lastBookingLatest);
+                        } else {
+                            fetch('{% url "massage_app:bookings-version" %}', {credentials: 'same-origin'})
+                                .then(r => r.json()).then(j => { if (j && j.latest) { window.__lastBookingLatest = j.latest; showNotifPopup(j.latest); } }).catch(()=>{});
+                        }
+                        // mark notifications seen (clear badge)
+                        const csrftoken = getCsrfToken();
+                        fetch('{% url "massage_app:mark-notifications-seen" %}', {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRFToken': csrftoken || '',
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            },
+                            credentials: 'same-origin'
+                        }).then(resp => resp.json()).then(j => {
+                            if (j && j.success) {
+                                updateBadge(0);
+                                window.__lastBookingLatest = null;
+                            }
+                        }).catch(() => {});
+                    });
+                }
+
+                fetchBookingVer();
+                setInterval(fetchBookingVer, 5000);
+            })();
         });
     </script>
 </body>

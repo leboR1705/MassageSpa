@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Serein Spa - Relax. Refresh. Rejuvenate.</title>
+    <title>Satori Spa - Restore. Renew. Revive.</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
-
         :root {
-            --primary-color: #A3C9A8; /* Soft Mint Green */
-            --secondary-color: #F8F4E3; /* Light Beige */
-            --accent-color: #B59EBE; /* Soft Lavender/Mauve */
+            --primary-color: #A3C9A8;
+            /* Soft Mint Green */
+            --secondary-color: #F8F4E3;
+            /* Light Beige */
+            --accent-color: #B59EBE;
+            /* Soft Lavender/Mauve */
             --text-dark: #333;
             --text-light: #fff;
             --font-family: 'Poppins', sans-serif;
@@ -104,23 +107,24 @@
             position: relative;
         }
 
-        .nav-link:hover, .nav-link.active {
+        .nav-link:hover,
+        .nav-link.active {
             color: var(--primary-color);
         }
-        
-        /* Underline effect on hover */
+
         .nav-link::after {
             content: '';
             position: absolute;
             left: 0;
             bottom: 0;
             width: 0;
-            height: 2px;
+            height: 3px;
             background-color: var(--primary-color);
             transition: width var(--transition-time) ease-in-out;
         }
 
-        .nav-link:hover::after, .nav-link.active::after {
+        .nav-link:hover::after,
+        .nav-link.active::after {
             width: 100%;
         }
 
@@ -133,7 +137,7 @@
         }
 
         .book-now-btn:hover {
-            background-color: #9C83A4; /* Darker accent */
+            background-color: #9C83A4;
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
         }
@@ -156,31 +160,18 @@
             text-align: center;
             color: var(--text-light);
             overflow: hidden;
-            margin-top: 60px; /* Offset for fixed navbar */
+            margin-top: 60px;
         }
 
-        .hero-video {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            min-width: 100%;
-            min-height: 100%;
-            width: auto;
-            height: auto;
-            z-index: -1;
-            transform: translate(-50%, -50%);
-            background-size: cover;
-        }
-        
-        /* Fallback image if video fails or for mobile performance */
+        /* Static hero background (no motion) */
         .hero-video-fallback {
-             background: url('https://picsum.photos/1920/1080?random=spa-room') no-repeat center center/cover; 
-             position: absolute;
-             top: 0;
-             left: 0;
-             width: 100%;
-             height: 100%;
-             z-index: -2;
+            background: url('https://1.bp.blogspot.com/-86w6H-TfTbM/Ujd2Dz3bw8I/AAAAAAAAABU/ihbreLe8y54/s1600/spa_1920x1200_091.jpg') no-repeat center center/cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
         }
 
         .hero-overlay {
@@ -189,7 +180,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4); /* Dark overlay for text contrast */
+            background: rgba(0, 0, 0, 0.4);
             z-index: -1;
         }
 
@@ -197,6 +188,13 @@
             z-index: 1;
             padding: 20px;
             max-width: 700px;
+        }
+
+        /* Ensure comfortable spacing between subtitle and CTA */
+        .hero-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin: 0 0 28px;
         }
 
         .hero h1 {
@@ -212,14 +210,13 @@
             padding: 15px 35px;
             margin-top: 20px;
         }
-        
+
         .hero .cta-button:hover {
-            background-color: #8EBA93; /* Darker primary */
+            background-color: #8EBA93;
             transform: scale(1.05);
         }
 
-        /* --- Preview Sections for Navigation --- */
-        
+        /* --- Preview Sections --- */
         .preview-section {
             min-height: 50vh;
             display: flex;
@@ -233,13 +230,12 @@
             font-size: 2.5rem;
             color: var(--primary-color);
         }
-        
+
         .preview-content {
             padding: 40px;
             border-radius: var(--border-radius);
             max-width: 800px;
         }
-
 
         /* --- Footer --- */
         .footer {
@@ -250,7 +246,134 @@
             font-size: 0.9rem;
         }
 
-        /* --- Responsive Design (FIXED MOBILE MENU) --- */
+        /* --- Modal for Login/Register --- */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1em;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 8px rgba(163, 201, 168, 0.2);
+        }
+
+        .submit-btn {
+            background-color: var(--primary-color);
+            color: var(--text-dark);
+            padding: 12px 24px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.2s ease, transform 0.15s ease;
+            margin-bottom: 12px;
+        }
+
+        .submit-btn:hover {
+            background-color: #8EBA93;
+            transform: translateY(-2px);
+        }
+
+        .toggle-link {
+            font-size: 0.9em;
+            margin-top: 12px;
+        }
+
+        .toggle-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .toggle-link a:hover {
+            text-decoration: underline;
+        }
+
+        #register-form {
+            display: none;
+        }
+
+        #register-form .form-group {
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* --- Responsive Design --- */
         @media (max-width: 768px) {
             .nav-menu {
                 position: absolute;
@@ -260,7 +383,7 @@
                 flex-direction: column;
                 background-color: var(--secondary-color);
                 box-shadow: var(--shadow);
-                display: none; /* Hidden by default */
+                display: none;
                 padding: 20px 0;
                 border-top: 1px solid var(--primary-color);
             }
@@ -271,18 +394,16 @@
 
             .nav-item {
                 margin: 10px 0;
-                /* FIX: Align all links to the left */
-                text-align: left; 
+                text-align: left;
                 padding-left: 20px;
             }
-            
+
             .nav-item:last-child {
                 margin-top: 20px;
                 padding-left: 20px;
             }
-            
+
             .book-now-btn {
-                /* FIX: Allow button to be left aligned naturally */
                 width: auto;
                 margin: 0;
                 display: inline-block;
@@ -291,84 +412,182 @@
             .menu-toggle {
                 display: block;
             }
-            
+
             .hero h1 {
                 font-size: 3rem;
             }
         }
     </style>
 </head>
+
 <body>
     <nav class="navbar">
         <div class="container nav-container">
-            <a href="index.html" class="logo">Serein Spa</a>
+            <a href="{% url 'massage_app:index' %}" class="logo">Satori Spa</a>
             <button class="menu-toggle" id="menu-toggle" aria-label="Toggle navigation">☰</button>
             <ul class="nav-menu" id="nav-menu">
-                <li class="nav-item"><a href="index.html" class="nav-link active">Home</a></li>
-                <li class="nav-item"><a href="services.html" class="nav-link">Services</a></li>
-                <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-                <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-                <li class="nav-item"><a href="book-now.html" class="book-now-btn">Book Now</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:index' %}" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:services' %}" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
+                <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
             </ul>
         </div>
     </nav>
-
     <main>
         <section id="home" class="hero">
-            <div class="hero-video-fallback"></div>
-            <video autoplay muted loop class="hero-video">
-                <source src="placeholder-spa-video.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-            </video>
+            <!-- Static background only; removed video to stop motion -->
+            <div class="hero-video-fallback" role="img" aria-label="Calming spa scene"></div>
             <div class="hero-overlay"></div>
             <div class="hero-content">
-                <h1>Relax. Refresh. Rejuvenate.</h1>
-                <p style="font-size: 1.2rem;">Find your moment of serenity with our luxurious treatments.</p>
-                <a href="book-now.html" class="cta-button">Book Your Serenity</a>
+                <h1>Restore. Renew. Revive.</h1>
+                <p style="font-size: 1.2rem;">Indulge in the art of relaxation with our soothing spa treatments</p>
+                <a href="{% url 'massage_app:services' %}" class="cta-button">Our Services</a>
             </div>
         </section>
 
-        <section id="services-preview" class="section-padding text-center preview-section" style="background-color: var(--secondary-color);">
-            <div class="container preview-content">
-                <h2>Our Indulgences</h2>
-                <p style="margin-top: 15px; color: #666;">Experience our signature services, from traditional Swedish to therapeutic Hot Stone treatments. **<a href="services.html" style="color: var(--accent-color); font-weight: 600;">View All Services</a>**.</p>
-            </div>
-        </section>
-
-        <section id="about-preview" class="section-padding text-center preview-section" style="background-color: #fff;">
-            <div class="container preview-content">
-                <h2>Our Philosophy</h2>
-                <p style="margin-top: 15px; color: #666;">We believe in holistic well-being. Learn about our commitment to tranquility and meet our expert team. **<a href="about.html" style="color: var(--accent-color); font-weight: 600;">Read Our Story</a>**.</p>
-            </div>
-        </section>
-
-        <section id="contact-preview" class="section-padding text-center preview-section" style="background-color: var(--secondary-color);">
-            <div class="container preview-content">
-                <h2>Find Your Calm</h2>
-                <p style="margin-top: 15px; color: #666;">Ready to book or have a question? We are located at [Your Address]. **<a href="contact.html" style="color: var(--accent-color); font-weight: 600;">Contact Us Now</a>**.</p>
-            </div>
-        </section>
     </main>
 
-    <footer class="footer">
-        <p>© 2025 Serein Spa. All rights reserved. | <a href="login.html" style="color: var(--accent-color);">Staff Login</a></p>
-    </footer>
-
+    <!-- Modal for Login/Register -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <button class="close-btn" id="close-modal">×</button>
+            <div id="login-form">
+                <h2>Staff Login</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="login-email">Email Address</label>
+                        <input type="email" id="login-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" name="password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Log In</button>
+                    <p class="toggle-link">
+                        Don't have an account? <a href="#" id="showRegister">Register here</a>
+                    </p>
+                    <p id="login-message" style="margin-top: 15px; color: red; font-weight: 600; display: none;"></p>
+                </form>
+            </div>
+            <div id="register-form">
+                <h2>Staff Registration</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="reg-name">Full Name</label>
+                        <input type="text" id="reg-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">Email Address</label>
+                        <input type="email" id="reg-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-phone">Contact Number</label>
+                        <input type="tel" id="reg-phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">Password</label>
+                        <input type="password" id="reg-password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-confirm-password">Confirm Password</label>
+                        <input type="password" id="reg-confirm-password" name="confirm-password" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Create Account</button>
+                    <p class="toggle-link">
+                        Already have an account? <a href="#" id="showLogin">Login here</a>
+                    </p>
+                    <p id="register-message"
+                        style="margin-top: 15px; color: var(--primary-color); font-weight: 600; display: none;"></p>
+                </form>
+            </div>
+        </div>
+    </div>
     <script>
-        // JavaScript for Mobile Menu Toggle
+        // Mobile Menu Toggle
         const menuToggle = document.getElementById('menu-toggle');
         const navMenu = document.getElementById('nav-menu');
-
         menuToggle.addEventListener('click', () => {
             navMenu.classList.toggle('active');
         });
-        
-        // Close menu when a link is clicked (useful for mobile)
         document.querySelectorAll('.nav-link').forEach(n => n.addEventListener('click', () => {
             if (navMenu.classList.contains('active')) {
                 navMenu.classList.remove('active');
             }
         }));
+
+        // Modal Toggle
+        const modal = document.getElementById('modal');
+        const openModalBtn = document.getElementById('open-modal');
+        const closeModalBtn = document.getElementById('close-modal');
+        if (openModalBtn) {
+            openModalBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                modal.classList.add('active');
+            });
+        }
+        if (closeModalBtn) {
+            closeModalBtn.addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Toggle Login/Register Forms
+        const loginFormDiv = document.getElementById('login-form');
+        const registerFormDiv = document.getElementById('register-form');
+        const showRegisterLink = document.getElementById('showRegister');
+        const showLoginLink = document.getElementById('showLogin');
+        function toggleForms(showForm) {
+            if (showForm === 'register') {
+                loginFormDiv.style.display = 'none';
+                registerFormDiv.style.display = 'block';
+            } else {
+                registerFormDiv.style.display = 'none';
+                loginFormDiv.style.display = 'block';
+            }
+        }
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('register');
+        });
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('login');
+        });
+
+        // Mock Form Submissions
+        document.getElementById('loginForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const messageElement = document.getElementById('login-message');
+            messageElement.style.color = 'var(--primary-color)';
+            messageElement.textContent = "Login successful! Redirecting...";
+            messageElement.style.display = 'block';
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+                modal.classList.remove('active');
+            }, 3000);
+        });
+        document.getElementById('registerForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const messageElement = document.getElementById('register-message');
+            if (password !== confirmPassword) {
+                messageElement.style.color = 'red';
+                messageElement.textContent = "Error: Passwords do not match.";
+                messageElement.style.display = 'block';
+            } else {
+                messageElement.style.color = 'var(--primary-color)';
+                messageElement.textContent = "Registration successful! Please log in.";
+                messageElement.style.display = 'block';
+                document.getElementById('registerForm').reset();
+                setTimeout(() => {
+                    toggleForms('login');
+                    messageElement.style.display = 'none';
+                }, 3000);
+            }
+        });
     </script>
 </body>
+
 </html>
