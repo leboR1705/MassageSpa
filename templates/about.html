@@ -29,7 +29,7 @@
             font-family: var(--font-family);
             line-height: 1.6;
             color: var(--text-dark);
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             padding-top: 80px; /* Space for fixed navbar */
         }
 
@@ -75,7 +75,7 @@
 
         /* --- Navbar (Consistent Styling) --- */
         .navbar {
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             position: fixed;
             width: 100%;
@@ -107,7 +107,7 @@
 
         .nav-link {
             font-weight: 400;
-            color: var(--text-dark);
+            color: #f7f5f2;
             padding: 5px 0;
             position: relative;
         }
@@ -155,7 +155,7 @@
             font-size: 1.8rem;
             background: none;
             border: none;
-            color: var(--text-dark);
+            color: #f7f5f2;
         }
 
         /* --- About Section Styles --- */
@@ -241,7 +241,7 @@
                 left: 0;
                 width: 100%;
                 flex-direction: column;
-                background-color: var(--secondary-color);
+                background-color: #3d405b;
                 box-shadow: var(--shadow);
                 display: none;
                 padding: 20px 0;
@@ -278,6 +278,9 @@
                 <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link active">About</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a href="{% url 'massage_app:logout' %}" class="nav-link">Logout</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>

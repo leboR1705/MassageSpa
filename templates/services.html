@@ -29,7 +29,7 @@
             font-family: var(--font-family);
             line-height: 1.6;
             color: var(--text-dark);
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             padding-top: 80px; /* Space for fixed navbar */
         }
 
@@ -68,7 +68,7 @@
 
         /* --- Header/Navbar (Copied from index.html for consistency) --- */
         .navbar {
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             position: fixed;
             width: 100%;
@@ -101,7 +101,7 @@
 
         .nav-link {
             font-weight: 400;
-            color: var(--text-dark);
+            color: #f7f5f2;
             padding: 5px 0;
             position: relative;
         }
@@ -150,7 +150,7 @@
             font-size: 1.8rem;
             background: none;
             border: none;
-            color: var(--text-dark);
+            color: #f7f5f2;
         }
         /* --- End Navbar Styles --- */
 
@@ -264,7 +264,7 @@
                 left: 0;
                 width: 100%;
                 flex-direction: column;
-                background-color: var(--secondary-color);
+                background-color: #3d405b;
                 box-shadow: var(--shadow);
                 display: none;
                 padding: 20px 0;
@@ -314,6 +314,9 @@
                 <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a href="{% url 'massage_app:logout' %}" class="nav-link">Logout</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -323,7 +326,7 @@
             <div class="container">
                 <header class="services-header text-center">
                     <h1>Our Services</h1>
-                    <p style="color: #666; max-width: 600px; margin: 15px auto 50px;">Indulge in our curated selection of treatments designed to relax your body, refresh your mind, and rejuvenate your spirit.</p>
+                    <p style="color: #d6d2c8; max-width: 600px; margin: 15px auto 50px;">Indulge in our curated selection of treatments designed to relax your body, refresh your mind, and rejuvenate your spirit.</p>
                 </header>
                 
                 <div class="services-grid">
@@ -345,7 +348,7 @@
                         </div>
                     </div>
                     {% empty %}
-                    <div style="text-align:center; color:#888;">No services found.</div>
+                    <div style="text-align:center; color:#ccc;">No services found.</div>
                     {% endfor %}
                 
             </div>

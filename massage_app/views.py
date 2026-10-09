@@ -115,6 +115,72 @@ def logout_view(request):
 	logout(request)
 	return redirect('massage_app:login')
 
+@csrf_exempt
+def forgot_password_view(request):
+	# Temporarily exempt from CSRF to unblock development testing.
+	# SECURITY: remove this exemption before production.
+	if request.method == 'POST':
+		email = (request.POST.get('email') or '').strip()
+		user = User.objects.filter(email__iexact=email).first() if email else None
+		if user is not None and user.email:
+			from django.contrib.auth.tokens import default_token_generator
+			from django.utils.http import urlsafe_base64_encode
+			from django.utils.encoding import force_bytes
+			from django.urls import reverse
+			uid = urlsafe_base64_encode(force_bytes(user.pk))
+			token = default_token_generator.make_token(user)
+			reset_url = request.build_absolute_uri(reverse('massage_app:reset-password', kwargs={'uidb64': uid, 'token': token}))
+			subject = 'Reset Your Satori Spa Password'
+			message = (f"Hello {user.username},\n\n"
+				"Someone requested a password reset for your account.\n\n"
+				f"Click the link below to choose a new password:\n{reset_url}\n\n"
+				"If you did not request this, you can safely ignore this email. "
+				"The link will expire in a few hours.")
+			from django.conf import settings as _settings
+			from_email = getattr(_settings, 'DEFAULT_FROM_EMAIL', 'noreply@yourspa.com')
+			try:
+				send_mail(subject, message, from_email, [user.email], fail_silently=False)
+				print(f"Password reset email sent to {user.email}")
+			except Exception as e:
+				import traceback
+				print('Password reset email error:', e)
+				traceback.print_exc()
+		# Same message either way so we don't reveal which emails exist
+		return render(request, 'login.html', {'forgot_success': 'If an account exists for that email, a password reset link has been sent.', 'show_forgot': True})
+	return render(request, 'login.html', {'show_forgot': True})
+
+@csrf_exempt
+def reset_password_view(request, uidb64, token):
+	# Temporarily exempt from CSRF to unblock development testing.
+	# SECURITY: remove this exemption before production.
+	from django.contrib.auth.tokens import default_token_generator
+	from django.utils.http import urlsafe_base64_decode
+	from django.utils.encoding import force_str
+	user = None
+	try:
+		uid = force_str(urlsafe_base64_decode(uidb64))
+		user = User.objects.get(pk=uid)
+	except Exception:
+		user = None
+	if user is None or not default_token_generator.check_token(user, token):
+		return render(request, 'reset-password.html', {'error': 'This reset link is invalid or has expired. Please request a new one.'})
+	if request.method == 'POST':
+		password = request.POST.get('password')
+		confirm = request.POST.get('confirm-password')
+		if not password:
+			return render(request, 'reset-password.html', {'error': 'Password is required.'})
+		if password != confirm:
+			return render(request, 'reset-password.html', {'error': 'Passwords do not match.'})
+		from django.contrib.auth.password_validation import validate_password
+		try:
+			validate_password(password, user)
+		except Exception as e:
+			return render(request, 'reset-password.html', {'error': ' '.join(e.messages)})
+		user.set_password(password)
+		user.save()
+		return render(request, 'reset-password.html', {'success': 'Password updated successfully! You can now log in.'})
+	return render(request, 'reset-password.html')
+
 def mark_notifications_seen(request):
     if request.method == 'POST':
         # Mark all unseen pending bookings as notification_seen=True

@@ -10,7 +10,7 @@
             font-family: 'Open Sans', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f9f7;
+            background-color: #3d405b;
             color: #333;
             display: flex;
             justify-content: center;
@@ -28,7 +28,7 @@
             margin: 0;
             font-family: 'Playfair Display', serif;
             font-size: 1.8em;
-            color: #2c5f5d;
+            color: #f7f5f2;
             letter-spacing: 0.5px;
             font-weight: 700;
         }
@@ -119,6 +119,14 @@
             display: none;
         }
 
+        #forgot-form {
+            display: none;
+        }
+
+        #forgot-form .form-group {
+            animation: fadeIn 0.5s;
+        }
+
         #register-form .form-group {
             animation: fadeIn 0.5s;
         }
@@ -148,7 +156,7 @@
     <main>
         <div class="page-title"><h1>Welcome to Satori Spa</h1></div>
         <div class="account-container">
-            <div id="login-form" {% if register_error or register_success or show_register %}style="display:none;"{% endif %}>
+            <div id="login-form" {% if register_error or register_success or show_register or show_forgot or forgot_success %}style="display:none;"{% endif %}>
                 <h2>Login</h2>
                 <form id="loginForm" method="post" action="{% url 'massage_app:login' %}">
                     {% csrf_token %}
@@ -161,6 +169,9 @@
                         <input type="password" id="login-password" name="password" required>
                     </div>
                     <button type="submit" class="submit-btn">Log In</button>
+                    <p class="toggle-link" style="margin-top: 0; text-align: center;">
+                        <a href="#" id="showForgot">Forgot password?</a>
+                    </p>
                     <hr>
                     <p class="toggle-link">
                         Don't have an account? <a href="#" id="showRegister">Register here</a>
@@ -203,24 +214,47 @@
                     {% endif %}
                 </form>
             </div>
+            <div id="forgot-form" {% if show_forgot or forgot_success %}style="display:block;"{% endif %}>
+                <h2>Forgot Password</h2>
+                <form id="forgotForm" method="post" action="{% url 'massage_app:forgot-password' %}">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="forgot-email">Email Address</label>
+                        <input type="email" id="forgot-email" name="email" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Send Reset Link</button>
+                    <hr>
+                    <p class="toggle-link">
+                        Remember your password? <a href="#" id="showLoginForgot">Login here</a>
+                    </p>
+                    {% if forgot_success %}
+                        <p style="color: #2c5f5d; font-weight: 600;">{{ forgot_success }}</p>
+                    {% endif %}
+                </form>
+            </div>
         </div>
     </main>
     <script>
         const loginFormDiv = document.getElementById('login-form');
         const registerFormDiv = document.getElementById('register-form');
+        const forgotFormDiv = document.getElementById('forgot-form');
         const showRegisterLink = document.getElementById('showRegister');
         const showLoginLink = document.getElementById('showLogin');
+        const showForgotLink = document.getElementById('showForgot');
+        const showLoginForgotLink = document.getElementById('showLoginForgot');
 
         function toggleForms(showForm) {
+            loginFormDiv.style.display = 'none';
+            registerFormDiv.style.display = 'none';
+            forgotFormDiv.style.display = 'none';
             if (showForm === 'register') {
-                loginFormDiv.style.display = 'none';
                 registerFormDiv.style.display = 'block';
-                document.querySelector('.account-container').scrollTop = 0;
+            } else if (showForm === 'forgot') {
+                forgotFormDiv.style.display = 'block';
             } else {
-                registerFormDiv.style.display = 'none';
                 loginFormDiv.style.display = 'block';
-                document.querySelector('.account-container').scrollTop = 0;
             }
+            document.querySelector('.account-container').scrollTop = 0;
         }
 
         showRegisterLink.addEventListener('click', (e) => {
@@ -229,6 +263,16 @@
         });
 
         showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('login');
+        });
+
+        showForgotLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleForms('forgot');
+        });
+
+        showLoginForgotLink.addEventListener('click', (e) => {
             e.preventDefault();
             toggleForms('login');
         });

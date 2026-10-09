@@ -15,6 +15,8 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('admin-dashboard/', views.admin_dashboard, name='admin-dashboard'),
     path('register/', views.register_view, name='register'),
+    path('forgot-password/', views.forgot_password_view, name='forgot-password'),
+    path('reset-password/<uidb64>/<token>/', views.reset_password_view, name='reset-password'),
     # Service CRUD
     path('admin-dashboard/service/add/', views.add_service, name='add-service'),
     path('admin-dashboard/service/<int:service_id>/edit/', views.edit_service, name='edit-service'),

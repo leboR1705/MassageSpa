@@ -37,7 +37,7 @@
             font-family: var(--font-family);
             line-height: 1.6;
             color: var(--text-dark);
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             padding-top: 80px; /* Space for fixed navbar */
         }
 
@@ -75,19 +75,19 @@
         }
 
         .section-padding {
-            padding: 80px 0;
+            padding: 40px 0;
         }
 
         h2 {
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: var(--primary-color);
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             text-align: center;
         }
         
         /* --- Navbar (Consistent Styling) --- */
         .navbar {
-            background-color: var(--secondary-color);
+            background-color: #3d405b;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
             position: fixed;
             width: 100%;
@@ -119,7 +119,7 @@
 
         .nav-link {
             font-weight: 400;
-            color: var(--text-dark);
+            color: #f7f5f2;
             padding: 5px 0; /* match other pages */
             position: relative;
         }
@@ -167,7 +167,7 @@
             font-size: 1.8rem;
             background: none;
             border: none;
-            color: var(--text-dark);
+            color: #f7f5f2;
         }
 
         /* --- Booking Layout & Card Styles --- */
@@ -178,7 +178,7 @@
         }
         .booking-form-box {
             background-color: #fff;
-            padding: 30px 30px 24px;
+            padding: 20px 22px 18px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
         }
@@ -197,23 +197,23 @@
         .summary-total { border-top: 1px dashed #e5e5e5; margin-top: 12px; padding-top: 12px; font-weight: 700; font-size: 1.1rem; }
 
         /* --- Form controls --- */
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-dark); }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; margin-bottom: 4px; font-weight: 600; color: var(--text-dark); font-size: 0.85rem; }
         .form-group input,
         .form-group select,
         .form-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 7px 9px;
             border: 1px solid #ddd;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.875rem;
             transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus { border-color: var(--primary-color); outline: none; box-shadow: 0 0 0 4px rgba(163,201,168,0.15); }
 
-        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         /* removed addons UI - no longer used */
         .addon-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; color: #555; }
         .addon-item input { width: auto; }
@@ -221,11 +221,11 @@
         .confirm-btn {
             background-color: var(--accent-color);
             color: var(--text-light);
-            padding: 14px 22px;
+            padding: 10px 22px;
             border-radius: 28px;
             font-weight: 700;
             width: 100%;
-            margin-top: 10px;
+            margin-top: 8px;
             box-shadow: 0 6px 16px rgba(0,0,0,0.15);
         }
         .confirm-btn:hover { background-color: #9C83A4; transform: translateY(-1px); }
@@ -252,7 +252,7 @@
                 left: 0;
                 width: 100%;
                 flex-direction: column;
-                background-color: var(--secondary-color);
+                background-color: #3d405b;
                 box-shadow: var(--shadow);
                 display: none;
                 padding: 20px 0;
@@ -336,6 +336,9 @@
                 <li class="nav-item"><a href="{% url 'massage_app:about' %}" class="nav-link">About</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:contact' %}" class="nav-link">Contact</a></li>
                 <li class="nav-item"><a href="{% url 'massage_app:booknow' %}" class="book-now-btn">Book Now</a></li>
+                {% if user.is_authenticated %}
+                <li class="nav-item"><a href="{% url 'massage_app:logout' %}" class="nav-link">Logout</a></li>
+                {% endif %}
             </ul>
         </div>
     </nav>
@@ -352,7 +355,7 @@
                         {% endif %}
                         <form id="bookingForm" method="POST" action="{% url 'massage_app:booknow' %}">
                             {% csrf_token %}
-                            <h3 style="color: var(--accent-color); margin-bottom: 14px;">Your Details</h3>
+                            <h3 style="color: var(--accent-color); margin-bottom: 8px; font-size: 1.1rem;">Your Details</h3>
                             <div class="two-col">
                                 <div class="form-group">
                                     <label for="customerName">Full Name</label>
@@ -389,7 +392,7 @@
                                 </div>
                             </div>
 
-                            <h3 style="color: var(--accent-color); margin: 22px 0 10px;">Select Service & Schedule</h3>
+                            <h3 style="color: var(--accent-color); margin: 14px 0 8px; font-size: 1.1rem;">Select Service & Schedule</h3>
                             <div class="form-group">
                                 <label for="serviceSelection">Service Selection</label>
                                 <select id="serviceSelection" name="serviceSelection" required>
